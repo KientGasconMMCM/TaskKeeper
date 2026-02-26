@@ -13,10 +13,6 @@ function DashboardPage({ user, onLogout }) {
   const navigate = useNavigate();
   const token = localStorage.getItem('token');
 
-  useEffect(() => {
-    fetchTasks();
-  }, []);
-
   const fetchTasks = async () => {
     try {
       setLoading(true);
@@ -30,6 +26,11 @@ function DashboardPage({ user, onLogout }) {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchTasks();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleCreateTask = async (taskData) => {
     try {
