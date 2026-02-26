@@ -13,18 +13,19 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f5f5f5;
-            color: #333;
+            background: linear-gradient(135deg, #1a2332 0%, #0f1419 100%);
+            color: #fff;
+            min-height: 100vh;
         }
 
         .navbar {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background-color: rgba(26, 35, 50, 0.8);
+            border-bottom: 1px solid #2a3a4a;
             color: white;
             padding: 20px 30px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
 
         .navbar h1 {
@@ -41,16 +42,17 @@
             color: white;
             text-decoration: none;
             font-weight: 500;
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(8, 150, 238, 0.2);
             padding: 8px 16px;
-            border-radius: 5px;
+            border-radius: 4px;
             border: none;
             cursor: pointer;
+            font-size: 14px;
             transition: background 0.3s;
         }
 
         .nav-links a:hover, .logout-btn:hover {
-            background: rgba(255, 255, 255, 0.3);
+            background: rgba(8, 150, 238, 0.4);
         }
 
         .container {
@@ -68,37 +70,38 @@
 
         .header h2 {
             font-size: 28px;
-            color: #333;
+            color: #fff;
         }
 
         .create-btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background-color: #0896ee;
             color: white;
             padding: 12px 24px;
             border: none;
-            border-radius: 5px;
+            border-radius: 4px;
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
             text-decoration: none;
             display: inline-block;
-            transition: transform 0.2s, box-shadow 0.2s;
+            transition: all 0.3s ease;
         }
 
         .create-btn:hover {
+            background-color: #0682d6;
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 4px 12px rgba(8, 150, 238, 0.3);
         }
 
         .filters {
-            background: white;
+            background-color: rgba(26, 35, 50, 0.8);
+            border: 1px solid #2a3a4a;
             padding: 20px;
-            border-radius: 10px;
+            border-radius: 8px;
             margin-bottom: 20px;
             display: flex;
             gap: 10px;
             flex-wrap: wrap;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
         }
 
         .filter-group {
@@ -109,27 +112,29 @@
 
         .filter-group label {
             font-weight: 500;
-            color: #666;
+            color: #ccc;
         }
 
         .filter-group select {
             padding: 8px 12px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
+            border: 1px solid #2a3a4a;
+            border-radius: 4px;
             font-size: 14px;
             cursor: pointer;
+            background-color: #1a2332;
+            color: #fff;
         }
 
         .tasks-container {
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            background-color: rgba(26, 35, 50, 0.8);
+            border: 1px solid #2a3a4a;
+            border-radius: 8px;
             overflow: hidden;
         }
 
         .task-item {
             padding: 20px;
-            border-bottom: 1px solid #f0f0f0;
+            border-bottom: 1px solid #2a3a4a;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -137,7 +142,7 @@
         }
 
         .task-item:hover {
-            background: #fafafa;
+            background: rgba(42, 58, 74, 0.5);
         }
 
         .task-item:last-child {
@@ -152,11 +157,11 @@
             font-size: 18px;
             font-weight: 600;
             margin-bottom: 5px;
-            color: #333;
+            color: #fff;
         }
 
         .task-description {
-            color: #666;
+            color: #999;
             font-size: 14px;
             margin-bottom: 8px;
         }
@@ -177,28 +182,28 @@
         }
 
         .badge.priority-high {
-            background: #ffe0e0;
-            color: #c33;
+            background: rgba(231, 76, 60, 0.2);
+            color: #e74c3c;
         }
 
         .badge.priority-medium {
-            background: #fff4e0;
-            color: #cc8800;
+            background: rgba(241, 196, 15, 0.2);
+            color: #f1c40f;
         }
 
         .badge.priority-low {
-            background: #e0f5e0;
-            color: #3c3;
+            background: rgba(46, 204, 113, 0.2);
+            color: #2ecc71;
         }
 
         .badge.status-pending {
-            background: #e3f2fd;
-            color: #1976d2;
+            background: rgba(8, 150, 238, 0.2);
+            color: #0896ee;
         }
 
         .badge.status-completed {
-            background: #e8f5e9;
-            color: #388e3c;
+            background: rgba(46, 204, 113, 0.2);
+            color: #2ecc71;
         }
 
         .task-actions {
@@ -208,25 +213,26 @@
         }
 
         .action-btn {
-            background: #f0f0f0;
+            background: #2a3a4a;
             border: none;
             padding: 8px 16px;
-            border-radius: 5px;
+            border-radius: 4px;
             cursor: pointer;
             font-size: 14px;
-            transition: background 0.3s;
+            color: #ccc;
+            transition: all 0.3s ease;
         }
 
         .action-btn:hover {
-            background: #e0e0e0;
+            background: #3a4a5a;
         }
 
         .action-btn.delete {
-            color: #c33;
+            color: #e74c3c;
         }
 
         .action-btn.delete:hover {
-            background: #ffebee;
+            background: rgba(231, 76, 60, 0.2);
         }
 
         .empty-state {
@@ -238,7 +244,7 @@
         .empty-state h3 {
             font-size: 20px;
             margin-bottom: 10px;
-            color: #666;
+            color: #ccc;
         }
 
         .alert {
@@ -249,15 +255,15 @@
         }
 
         .alert.error {
-            background-color: #fee;
-            color: #c33;
-            border: 1px solid #fcc;
+            background-color: rgba(231, 76, 60, 0.15);
+            color: #e74c3c;
+            border: 1px solid rgba(231, 76, 60, 0.3);
         }
 
         .alert.success {
-            background-color: #efe;
-            color: #3c3;
-            border: 1px solid #cfc;
+            background-color: rgba(46, 204, 113, 0.15);
+            color: #2ecc71;
+            border: 1px solid rgba(46, 204, 113, 0.3);
         }
 
         @media (max-width: 768px) {
@@ -292,7 +298,6 @@
     <div class="navbar">
         <h1>TaskKeeper</h1>
         <div class="nav-links">
-            <a href="create-task.html">+ New Task</a>
             <button class="logout-btn" onclick="logout()">Logout</button>
         </div>
     </div>
@@ -333,6 +338,7 @@
     </div>
 
     <script>
+        const API_BASE = 'http://localhost:5000';
         let allTasks = [];
 
         // Check if user is logged in
@@ -347,7 +353,7 @@
 
         async function loadTasks() {
             try {
-                const response = await fetch('/api/tasks', {
+                const response = await fetch(`${API_BASE}/api/tasks`, {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('token')}`,
@@ -355,7 +361,8 @@
                 });
 
                 if (response.ok) {
-                    allTasks = await response.json();
+                    const data = await response.json();
+                    allTasks = data.tasks || [];
                     renderTasks(allTasks);
                 } else if (response.status === 401) {
                     window.location.href = 'login.html';
@@ -384,20 +391,18 @@
             container.innerHTML = tasks.map(task => `
                 <div class="task-item">
                     <div class="task-info">
-                        <div class="task-title">${escapeHtml(task.title)}</div>
-                        ${task.description ? `<div class="task-description">${escapeHtml(task.description)}</div>` : ''}
+                        <div class="task-title">${escapeHtml(task.task_name)}</div>
+                        ${task.task_description ? `<div class="task-description">${escapeHtml(task.task_description)}</div>` : ''}
                         <div class="task-meta">
-                            ${task.dueDate ? `<span>📅 ${new Date(task.dueDate).toLocaleDateString()}</span>` : ''}
-                            <span class="badge priority-${task.priority}">${task.priority.toUpperCase()}</span>
-                            <span class="badge status-${task.status}">${task.status ? task.status.charAt(0).toUpperCase() + task.status.slice(1) : 'PENDING'}</span>
-                            ${task.category ? `<span>📁 ${escapeHtml(task.category)}</span>` : ''}
+                            ${task.deadline ? `<span>📅 ${new Date(task.deadline).toLocaleDateString()}</span>` : ''}
+                            <span class="badge status-${task.status || 'pending'}">${task.status ? task.status.charAt(0).toUpperCase() + task.status.slice(1) : 'Pending'}</span>
                         </div>
                     </div>
                     <div class="task-actions">
-                        <button class="action-btn" onclick="toggleTask('${task._id}', '${task.status}')">
+                        <button class="action-btn" onclick="toggleTask(${task.id}, '${task.status || 'pending'}', '${escapeHtml(task.task_name)}', '${escapeHtml(task.task_description || '')}', '${task.deadline || ''}')">
                             ${task.status === 'completed' ? '↩ Undo' : '✓ Complete'}
                         </button>
-                        <button class="action-btn delete" onclick="deleteTask('${task._id}')">Delete</button>
+                        <button class="action-btn delete" onclick="deleteTask(${task.id})">Delete</button>
                     </div>
                 </div>
             `).join('');
@@ -416,17 +421,17 @@
             renderTasks(filtered);
         }
 
-        async function toggleTask(taskId, currentStatus) {
+        async function toggleTask(taskId, currentStatus, taskName, taskDescription, deadline) {
             try {
                 const newStatus = currentStatus === 'completed' ? 'pending' : 'completed';
                 
-                const response = await fetch(`/api/tasks/${taskId}`, {
-                    method: 'PATCH',
+                const response = await fetch(`${API_BASE}/api/tasks/${taskId}`, {
+                    method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${localStorage.getItem('token')}`,
                     },
-                    body: JSON.stringify({ status: newStatus }),
+                    body: JSON.stringify({ taskName, taskDescription, deadline, status: newStatus }),
                 });
 
                 if (response.ok) {
@@ -446,7 +451,7 @@
             }
 
             try {
-                const response = await fetch(`/api/tasks/${taskId}`, {
+                const response = await fetch(`${API_BASE}/api/tasks/${taskId}`, {
                     method: 'DELETE',
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('token')}`,

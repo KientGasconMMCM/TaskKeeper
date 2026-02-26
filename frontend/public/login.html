@@ -13,27 +13,31 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1a2332 0%, #0f1419 100%);
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
+            color: #fff;
         }
 
         .container {
-            background: white;
+            background-color: rgba(26, 35, 50, 0.8);
+            border: 1px solid #2a3a4a;
             padding: 40px;
-            border-radius: 10px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
             width: 100%;
             max-width: 400px;
         }
 
         h1 {
             text-align: center;
-            color: #333;
+            color: #fff;
             margin-bottom: 30px;
             font-size: 28px;
+            letter-spacing: 1px;
         }
 
         .form-group {
@@ -43,41 +47,44 @@
         label {
             display: block;
             margin-bottom: 8px;
-            color: #555;
+            color: #ccc;
             font-weight: 500;
         }
 
         input {
             width: 100%;
             padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
+            border: 1px solid #2a3a4a;
+            border-radius: 4px;
             font-size: 14px;
             transition: border-color 0.3s;
+            background-color: #1a2332;
+            color: #fff;
         }
 
         input:focus {
             outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 5px rgba(102, 126, 234, 0.1);
+            border-color: #0896ee;
+            box-shadow: 0 0 0 3px rgba(8, 150, 238, 0.1);
         }
 
         button {
             width: 100%;
             padding: 12px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background-color: #0896ee;
             color: white;
             border: none;
-            border-radius: 5px;
+            border-radius: 4px;
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
+            transition: all 0.3s ease;
         }
 
         button:hover {
+            background-color: #0682d6;
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 4px 12px rgba(8, 150, 238, 0.3);
         }
 
         button:active {
@@ -87,12 +94,12 @@
         .form-footer {
             text-align: center;
             margin-top: 20px;
-            color: #666;
+            color: #999;
             font-size: 14px;
         }
 
         .form-footer a {
-            color: #667eea;
+            color: #0896ee;
             text-decoration: none;
             font-weight: 600;
         }
@@ -109,15 +116,15 @@
         }
 
         .alert.error {
-            background-color: #fee;
-            color: #c33;
-            border: 1px solid #fcc;
+            background-color: rgba(231, 76, 60, 0.15);
+            color: #e74c3c;
+            border: 1px solid rgba(231, 76, 60, 0.3);
         }
 
         .alert.success {
-            background-color: #efe;
-            color: #3c3;
-            border: 1px solid #cfc;
+            background-color: rgba(46, 204, 113, 0.15);
+            color: #2ecc71;
+            border: 1px solid rgba(46, 204, 113, 0.3);
         }
     </style>
 </head>
@@ -128,12 +135,12 @@
         
         <form id="loginForm">
             <div class="form-group">
-                <label for="email">Email Address</label>
+                <label for="identifier">Username or Email</label>
                 <input 
-                    type="email" 
-                    id="email" 
-                    name="email" 
-                    placeholder="your@example.com" 
+                    type="text" 
+                    id="identifier" 
+                    name="identifier" 
+                    placeholder="Username or email" 
                     required
                 >
             </div>
@@ -147,6 +154,7 @@
                     placeholder="Enter your password" 
                     required
                 >
+                <a href="forgot-password.html" style="display: block; text-align: right; margin-top: 6px; font-size: 13px; color: #0896ee; text-decoration: none;">Forgot password?</a>
             </div>
 
             <button type="submit">Sign In</button>
@@ -154,7 +162,6 @@
 
         <div class="form-footer">
             <p>Don't have an account? <a href="register.html">Sign up here</a></p>
-            <p><a href="forgot-password.html">Forgot password?</a></p>
         </div>
     </div>
 
@@ -165,16 +172,16 @@
         loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
 
-            const email = document.getElementById('email').value;
+            const identifier = document.getElementById('identifier').value;
             const password = document.getElementById('password').value;
 
             try {
-                const response = await fetch('/api/auth/login', {
+                const response = await fetch('http://localhost:5000/api/auth/login', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ email, password }),
+                    body: JSON.stringify({ username: identifier, password }),
                 });
 
                 const data = await response.json();

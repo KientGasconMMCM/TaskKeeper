@@ -32,6 +32,14 @@ const User = {
     });
   },
 
+  findByUsernameOrEmail: (identifier, callback) => {
+    const db = getDatabase();
+    const query = `SELECT * FROM users WHERE username = ? OR email = ?`;
+    db.get(query, [identifier, identifier], (err, row) => {
+      callback(err, row);
+    });
+  },
+
   findById: (id, callback) => {
     const db = getDatabase();
     const query = `SELECT * FROM users WHERE id = ?`;

@@ -13,16 +13,17 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1a2332 0%, #0f1419 100%);
             min-height: 100vh;
             padding: 20px;
+            color: #fff;
         }
 
         .navbar {
-            background: white;
+            background-color: rgba(26, 35, 50, 0.8);
+            border: 1px solid #2a3a4a;
             padding: 15px 30px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
             margin-bottom: 30px;
             display: flex;
             justify-content: space-between;
@@ -30,12 +31,12 @@
         }
 
         .navbar h2 {
-            color: #333;
+            color: #fff;
             font-size: 20px;
         }
 
         .nav-links a {
-            color: #667eea;
+            color: #0896ee;
             text-decoration: none;
             margin-left: 20px;
             font-weight: 500;
@@ -46,31 +47,34 @@
         }
 
         .logout-btn {
-            background: #667eea;
+            background: #0896ee;
             color: white;
             border: none;
             padding: 8px 16px;
-            border-radius: 5px;
+            border-radius: 4px;
             cursor: pointer;
             font-size: 14px;
+            transition: all 0.3s ease;
         }
 
         .logout-btn:hover {
-            background: #764ba2;
+            background: #0682d6;
         }
 
         .container {
-            background: white;
+            background-color: rgba(26, 35, 50, 0.8);
+            border: 1px solid #2a3a4a;
             padding: 40px;
-            border-radius: 10px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
             width: 100%;
             max-width: 600px;
             margin: 0 auto;
         }
 
         h1 {
-            color: #333;
+            color: #fff;
             margin-bottom: 30px;
             font-size: 28px;
         }
@@ -82,7 +86,7 @@
         label {
             display: block;
             margin-bottom: 8px;
-            color: #555;
+            color: #ccc;
             font-weight: 500;
         }
 
@@ -91,11 +95,13 @@
         select {
             width: 100%;
             padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
+            border: 1px solid #2a3a4a;
+            border-radius: 4px;
             font-size: 14px;
             font-family: inherit;
             transition: border-color 0.3s;
+            background-color: #1a2332;
+            color: #fff;
         }
 
         textarea {
@@ -107,8 +113,8 @@
         textarea:focus,
         select:focus {
             outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 5px rgba(102, 126, 234, 0.1);
+            border-color: #0896ee;
+            box-shadow: 0 0 0 3px rgba(8, 150, 238, 0.1);
         }
 
         .form-row {
@@ -127,30 +133,31 @@
             flex: 1;
             padding: 12px;
             border: none;
-            border-radius: 5px;
+            border-radius: 4px;
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
+            transition: all 0.3s ease;
         }
 
         .submit-btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background-color: #0896ee;
             color: white;
         }
 
         .submit-btn:hover {
+            background-color: #0682d6;
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 4px 12px rgba(8, 150, 238, 0.3);
         }
 
         .cancel-btn {
-            background: #e0e0e0;
-            color: #333;
+            background: #2a3a4a;
+            color: #ccc;
         }
 
         .cancel-btn:hover {
-            background: #d0d0d0;
+            background: #3a4a5a;
         }
 
         .alert {
@@ -161,15 +168,15 @@
         }
 
         .alert.error {
-            background-color: #fee;
-            color: #c33;
-            border: 1px solid #fcc;
+            background-color: rgba(231, 76, 60, 0.15);
+            color: #e74c3c;
+            border: 1px solid rgba(231, 76, 60, 0.3);
         }
 
         .alert.success {
-            background-color: #efe;
-            color: #3c3;
-            border: 1px solid #cfc;
+            background-color: rgba(46, 204, 113, 0.15);
+            color: #2ecc71;
+            border: 1px solid rgba(46, 204, 113, 0.3);
         }
 
         @media (max-width: 600px) {
@@ -274,23 +281,23 @@
         createTaskForm.addEventListener('submit', async (e) => {
             e.preventDefault();
 
-            const title = document.getElementById('title').value;
-            const description = document.getElementById('description').value;
-            const dueDate = document.getElementById('dueDate').value;
+            const taskName = document.getElementById('title').value;
+            const taskDescription = document.getElementById('description').value;
+            const deadline = document.getElementById('dueDate').value;
             const priority = document.getElementById('priority').value;
             const category = document.getElementById('category').value;
 
             try {
-                const response = await fetch('/api/tasks', {
+                const response = await fetch('http://localhost:5000/api/tasks', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${localStorage.getItem('token')}`,
                     },
                     body: JSON.stringify({
-                        title,
-                        description,
-                        dueDate,
+                        taskName,
+                        taskDescription,
+                        deadline,
                         priority,
                         category,
                     }),

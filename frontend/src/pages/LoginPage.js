@@ -41,10 +41,11 @@ function LoginPage({ onLogin }) {
           {error && <div className="alert alert-error">{error}</div>}
 
           <div className="form-group">
-            <label htmlFor="username">Username</label>
+            <label htmlFor="username">Username or Email</label>
             <input
               type="text"
               id="username"
+              placeholder="Username or email"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               required

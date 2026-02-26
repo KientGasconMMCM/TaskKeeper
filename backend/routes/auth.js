@@ -45,15 +45,16 @@ router.post('/signup', (req, res) => {
 
 // Login
 router.post('/login', (req, res) => {
-  const { username, password } = req.body;
+  const { username, email, password } = req.body;
+  const identifier = username || email;
 
-  if (!username || !password) {
-    return res.status(400).json({ message: 'Username and password are required' });
+  if (!identifier || !password) {
+    return res.status(400).json({ message: 'Username/email and password are required' });
   }
 
-  User.findByUsername(username, (err, user) => {
+  User.findByUsernameOrEmail(identifier, (err, user) => {
     if (!user) {
-      return res.status(401).json({ message: 'Invalid username or password' });
+      return res.status(401).json({ message: 'Invalid username/email or password' });
     }
 
     const isPasswordValid = bcrypt.compareSync(password, user.password);
