@@ -45,10 +45,14 @@ const getDatabase = () => {
       task_name TEXT NOT NULL,
       task_description TEXT,
       deadline DATETIME,
+      priority TEXT DEFAULT 'medium',
       status TEXT DEFAULT 'pending',
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY (user_id) REFERENCES users(id)
     )`);
+
+    // Add priority column if missing (existing databases)
+    try { db.run('ALTER TABLE tasks ADD COLUMN priority TEXT DEFAULT \'medium\''); } catch(e) {}
 
     console.log('Database initialized successfully');
     return db;

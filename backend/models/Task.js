@@ -1,13 +1,14 @@
 const { getDatabase, saveDatabase } = require('./db');
 
 const Task = {
-  create: async (userId, taskName, taskDescription, deadline) => {
+  create: async (userId, taskName, taskDescription, deadline, priority) => {
     const db = await getDatabase();
-    db.run('INSERT INTO tasks (user_id, task_name, task_description, deadline) VALUES (?, ?, ?, ?)', [userId, taskName, taskDescription, deadline]);
+    const p = priority || 'medium';
+    db.run('INSERT INTO tasks (user_id, task_name, task_description, deadline, priority) VALUES (?, ?, ?, ?, ?)', [userId, taskName, taskDescription, deadline, p]);
     const result = db.exec('SELECT last_insert_rowid() as id');
     const id = result[0].values[0][0];
     saveDatabase();
-    return { id, userId, taskName, taskDescription, deadline };
+    return { id, userId, taskName, taskDescription, deadline, priority: p };
   },
 
   getByUserId: async (userId) => {
@@ -22,9 +23,10 @@ const Task = {
     return tasks;
   },
 
-  update: async (taskId, taskName, taskDescription, deadline, status) => {
+  update: async (taskId, taskName, taskDescription, deadline, status, priority) => {
     const db = await getDatabase();
-    db.run('UPDATE tasks SET task_name = ?, task_description = ?, deadline = ?, status = ? WHERE id = ?', [taskName, taskDescription, deadline, status, taskId]);
+    const p = priority || 'medium';
+    db.run('UPDATE tasks SET task_name = ?, task_description = ?, deadline = ?, status = ?, priority = ? WHERE id = ?', [taskName, taskDescription, deadline, status, p, taskId]);
     saveDatabase();
   },
 
