@@ -129,7 +129,6 @@
             background-color: rgba(26, 35, 50, 0.8);
             border: 1px solid #2a3a4a;
             border-radius: 8px;
-            overflow: hidden;
         }
 
         .task-item {
@@ -145,8 +144,13 @@
             background: rgba(42, 58, 74, 0.5);
         }
 
+        .task-item:first-child {
+            border-radius: 8px 8px 0 0;
+        }
+
         .task-item:last-child {
             border-bottom: none;
+            border-radius: 0 0 8px 8px;
         }
 
         .task-info {
@@ -230,15 +234,13 @@
 
         .dropdown-menu {
             display: none;
-            position: absolute;
-            right: 0;
-            top: 100%;
+            position: fixed;
             background: #1e2d3d;
             border: 1px solid #2a3a4a;
             border-radius: 6px;
             min-width: 150px;
             box-shadow: 0 8px 24px rgba(0,0,0,0.4);
-            z-index: 100;
+            z-index: 1000;
             overflow: hidden;
         }
 
@@ -674,10 +676,25 @@
 
         function toggleMenu(event, taskId) {
             event.stopPropagation();
+            const menu = document.getElementById(`menu-${taskId}`);
             document.querySelectorAll('.dropdown-menu').forEach(m => {
                 if (m.id !== `menu-${taskId}`) m.classList.remove('show');
             });
-            document.getElementById(`menu-${taskId}`).classList.toggle('show');
+            menu.classList.toggle('show');
+
+            if (menu.classList.contains('show')) {
+                const btn = event.currentTarget;
+                const rect = btn.getBoundingClientRect();
+                const menuHeight = menu.scrollHeight;
+                const spaceBelow = window.innerHeight - rect.bottom;
+
+                if (spaceBelow < menuHeight + 8) {
+                    menu.style.top = `${rect.top - menuHeight - 4}px`;
+                } else {
+                    menu.style.top = `${rect.bottom + 4}px`;
+                }
+                menu.style.left = `${rect.right - menu.offsetWidth}px`;
+            }
         }
 
         function openEditModal(taskId, name, description, deadline, status) {
