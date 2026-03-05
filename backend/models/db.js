@@ -1,4 +1,4 @@
-const sqlite3 = require('sqlite3').verbose();
+const initSqlJs = require('sql.js');
 const path = require('path');
 const fs = require('fs');
 
@@ -9,54 +9,66 @@ const dbPath = isVercel
   : path.join(__dirname, '../database.db');
 
 let db = null;
+let initPromise = null;
 
 const getDatabase = () => {
-  if (!db) {
-    db = new sqlite3.Database(dbPath, (err) => {
-      if (err) {
-        console.error('Error opening database:', err);
+  if (db) return Promise.resolve(db);
+  if (initPromise) return initPromise;
+
+  initPromise = (async () => {
+    const SQL = await initSqlJs();
+
+    try {
+      if (fs.existsSync(dbPath)) {
+        const buffer = fs.readFileSync(dbPath);
+        db = new SQL.Database(buffer);
       } else {
-        console.log('Connected to SQLite database');
+        db = new SQL.Database();
       }
-    });
-  }
-  return db;
-};
+    } catch (err) {
+      console.error('Error loading database file, creating new one:', err.message);
+      db = new SQL.Database();
+    }
 
-const initializeDatabase = () => {
-  const database = getDatabase();
-  
-  database.serialize(() => {
-    // Users table
-    database.run(`
-      CREATE TABLE IF NOT EXISTS users (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        username TEXT UNIQUE NOT NULL,
-        email TEXT UNIQUE NOT NULL,
-        password TEXT NOT NULL,
-        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-      )
-    `);
+    // Create tables
+    db.run(`CREATE TABLE IF NOT EXISTS users (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      username TEXT UNIQUE NOT NULL,
+      email TEXT UNIQUE NOT NULL,
+      password TEXT NOT NULL,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    )`);
 
-    // Tasks table
-    database.run(`
-      CREATE TABLE IF NOT EXISTS tasks (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        user_id INTEGER NOT NULL,
-        task_name TEXT NOT NULL,
-        task_description TEXT,
-        deadline DATETIME,
-        status TEXT DEFAULT 'pending',
-        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (user_id) REFERENCES users(id)
-      )
-    `);
+    db.run(`CREATE TABLE IF NOT EXISTS tasks (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id INTEGER NOT NULL,
+      task_name TEXT NOT NULL,
+      task_description TEXT,
+      deadline DATETIME,
+      status TEXT DEFAULT 'pending',
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (user_id) REFERENCES users(id)
+    )`);
 
     console.log('Database initialized successfully');
-  });
+    return db;
+  })();
+
+  return initPromise;
+};
+
+const saveDatabase = () => {
+  if (!db) return;
+  try {
+    const data = db.export();
+    const buffer = Buffer.from(data);
+    fs.writeFileSync(dbPath, buffer);
+  } catch (err) {
+    console.error('Error saving database:', err.message);
+  }
 };
 
 module.exports = {
   getDatabase,
-  initializeDatabase
+  saveDatabase
 };

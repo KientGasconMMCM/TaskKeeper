@@ -1,40 +1,37 @@
-const { getDatabase } = require('./db');
+const { getDatabase, saveDatabase } = require('./db');
 
 const Task = {
-  create: (userId, taskName, taskDescription, deadline, callback) => {
-    const db = getDatabase();
-    const query = `INSERT INTO tasks (user_id, task_name, task_description, deadline) VALUES (?, ?, ?, ?)`;
-    db.run(query, [userId, taskName, taskDescription, deadline], function(err) {
-      if (err) {
-        callback(err, null);
-      } else {
-        callback(null, { id: this.lastID, userId, taskName, taskDescription, deadline });
-      }
-    });
+  create: async (userId, taskName, taskDescription, deadline) => {
+    const db = await getDatabase();
+    db.run('INSERT INTO tasks (user_id, task_name, task_description, deadline) VALUES (?, ?, ?, ?)', [userId, taskName, taskDescription, deadline]);
+    const result = db.exec('SELECT last_insert_rowid() as id');
+    const id = result[0].values[0][0];
+    saveDatabase();
+    return { id, userId, taskName, taskDescription, deadline };
   },
 
-  getByUserId: (userId, callback) => {
-    const db = getDatabase();
-    const query = `SELECT * FROM tasks WHERE user_id = ? ORDER BY deadline`;
-    db.all(query, [userId], (err, rows) => {
-      callback(err, rows);
-    });
+  getByUserId: async (userId) => {
+    const db = await getDatabase();
+    const stmt = db.prepare('SELECT * FROM tasks WHERE user_id = ? ORDER BY deadline');
+    stmt.bind([userId]);
+    const tasks = [];
+    while (stmt.step()) {
+      tasks.push(stmt.getAsObject());
+    }
+    stmt.free();
+    return tasks;
   },
 
-  update: (taskId, taskName, taskDescription, deadline, status, callback) => {
-    const db = getDatabase();
-    const query = `UPDATE tasks SET task_name = ?, task_description = ?, deadline = ?, status = ? WHERE id = ?`;
-    db.run(query, [taskName, taskDescription, deadline, status, taskId], function(err) {
-      callback(err);
-    });
+  update: async (taskId, taskName, taskDescription, deadline, status) => {
+    const db = await getDatabase();
+    db.run('UPDATE tasks SET task_name = ?, task_description = ?, deadline = ?, status = ? WHERE id = ?', [taskName, taskDescription, deadline, status, taskId]);
+    saveDatabase();
   },
 
-  delete: (taskId, callback) => {
-    const db = getDatabase();
-    const query = `DELETE FROM tasks WHERE id = ?`;
-    db.run(query, [taskId], function(err) {
-      callback(err);
-    });
+  delete: async (taskId) => {
+    const db = await getDatabase();
+    db.run('DELETE FROM tasks WHERE id = ?', [taskId]);
+    saveDatabase();
   }
 };
 

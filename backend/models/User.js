@@ -1,60 +1,70 @@
-const { getDatabase } = require('./db');
+const { getDatabase, saveDatabase } = require('./db');
 const bcrypt = require('bcryptjs');
 
 const User = {
-  create: (username, email, password, callback) => {
-    const db = getDatabase();
+  create: async (username, email, password) => {
+    const db = await getDatabase();
     const hashedPassword = bcrypt.hashSync(password, 10);
-    
-    const query = `INSERT INTO users (username, email, password) VALUES (?, ?, ?)`;
-    db.run(query, [username, email, hashedPassword], function(err) {
-      if (err) {
-        callback(err, null);
-      } else {
-        callback(null, { id: this.lastID, username, email });
-      }
-    });
+    db.run('INSERT INTO users (username, email, password) VALUES (?, ?, ?)', [username, email, hashedPassword]);
+    const result = db.exec('SELECT last_insert_rowid() as id');
+    const id = result[0].values[0][0];
+    saveDatabase();
+    return { id, username, email };
   },
 
-  findByUsername: (username, callback) => {
-    const db = getDatabase();
-    const query = `SELECT * FROM users WHERE username = ?`;
-    db.get(query, [username], (err, row) => {
-      callback(err, row);
-    });
+  findByUsername: async (username) => {
+    const db = await getDatabase();
+    const stmt = db.prepare('SELECT * FROM users WHERE username = ?');
+    stmt.bind([username]);
+    let user = null;
+    if (stmt.step()) {
+      user = stmt.getAsObject();
+    }
+    stmt.free();
+    return user;
   },
 
-  findByEmail: (email, callback) => {
-    const db = getDatabase();
-    const query = `SELECT * FROM users WHERE email = ?`;
-    db.get(query, [email], (err, row) => {
-      callback(err, row);
-    });
+  findByEmail: async (email) => {
+    const db = await getDatabase();
+    const stmt = db.prepare('SELECT * FROM users WHERE email = ?');
+    stmt.bind([email]);
+    let user = null;
+    if (stmt.step()) {
+      user = stmt.getAsObject();
+    }
+    stmt.free();
+    return user;
   },
 
-  findByUsernameOrEmail: (identifier, callback) => {
-    const db = getDatabase();
-    const query = `SELECT * FROM users WHERE username = ? OR email = ?`;
-    db.get(query, [identifier, identifier], (err, row) => {
-      callback(err, row);
-    });
+  findByUsernameOrEmail: async (identifier) => {
+    const db = await getDatabase();
+    const stmt = db.prepare('SELECT * FROM users WHERE username = ? OR email = ?');
+    stmt.bind([identifier, identifier]);
+    let user = null;
+    if (stmt.step()) {
+      user = stmt.getAsObject();
+    }
+    stmt.free();
+    return user;
   },
 
-  findById: (id, callback) => {
-    const db = getDatabase();
-    const query = `SELECT * FROM users WHERE id = ?`;
-    db.get(query, [id], (err, row) => {
-      callback(err, row);
-    });
+  findById: async (id) => {
+    const db = await getDatabase();
+    const stmt = db.prepare('SELECT * FROM users WHERE id = ?');
+    stmt.bind([id]);
+    let user = null;
+    if (stmt.step()) {
+      user = stmt.getAsObject();
+    }
+    stmt.free();
+    return user;
   },
 
-  updatePassword: (email, newPassword, callback) => {
-    const db = getDatabase();
+  updatePassword: async (email, newPassword) => {
+    const db = await getDatabase();
     const hashedPassword = bcrypt.hashSync(newPassword, 10);
-    const query = `UPDATE users SET password = ? WHERE email = ?`;
-    db.run(query, [hashedPassword, email], function(err) {
-      callback(err);
-    });
+    db.run('UPDATE users SET password = ? WHERE email = ?', [hashedPassword, email]);
+    saveDatabase();
   }
 };
 

@@ -4,16 +4,12 @@ const path = require('path');
 require('dotenv').config();
 const authRoutes = require('./routes/auth');
 const taskRoutes = require('./routes/tasks');
-const { initializeDatabase } = require('./models/db');
 
 const app = express();
 
 // Middleware
 app.use(cors());
 app.use(express.json());
-
-// Initialize database
-initializeDatabase();
 
 // API Routes
 app.use('/api/auth', authRoutes);
