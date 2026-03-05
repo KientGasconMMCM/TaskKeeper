@@ -1,20 +1,24 @@
 const { createClient } = require('@libsql/client');
 
 let db = null;
+let initPromise = null;
 
 const getDatabase = () => {
   if (db) return Promise.resolve(db);
+  if (initPromise) return initPromise;
 
-  // Use Turso cloud URL + auth token when available,
-  // otherwise fall back to a local SQLite file for development
-  const url = process.env.TURSO_DATABASE_URL || 'file:./database.db';
-  const authToken = process.env.TURSO_AUTH_TOKEN || undefined;
+  initPromise = (async () => {
+    // Use Turso cloud URL + auth token when available,
+    // otherwise fall back to a local SQLite file for development
+    const url = process.env.TURSO_DATABASE_URL || 'file:./database.db';
+    const authToken = process.env.TURSO_AUTH_TOKEN || undefined;
 
-  db = createClient({ url, authToken });
+    console.log('Connecting to database:', url ? url.replace(/\/\/.*@/, '//***@') : 'file:./database.db');
 
-  return (async () => {
+    const client = createClient({ url, authToken });
+
     // Create tables
-    await db.execute(`CREATE TABLE IF NOT EXISTS users (
+    await client.execute(`CREATE TABLE IF NOT EXISTS users (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       username TEXT UNIQUE NOT NULL,
       email TEXT UNIQUE NOT NULL,
@@ -22,7 +26,7 @@ const getDatabase = () => {
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     )`);
 
-    await db.execute(`CREATE TABLE IF NOT EXISTS tasks (
+    await client.execute(`CREATE TABLE IF NOT EXISTS tasks (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       user_id INTEGER NOT NULL,
       task_name TEXT NOT NULL,
@@ -35,11 +39,14 @@ const getDatabase = () => {
     )`);
 
     // Add priority column if missing (existing databases)
-    try { await db.execute("ALTER TABLE tasks ADD COLUMN priority TEXT DEFAULT 'medium'"); } catch(e) {}
+    try { await client.execute("ALTER TABLE tasks ADD COLUMN priority TEXT DEFAULT 'medium'"); } catch(e) {}
 
     console.log('Database initialized successfully');
+    db = client;
     return db;
   })();
+
+  return initPromise;
 };
 
 // No-op: Turso persists automatically, kept for API compatibility
