@@ -1,37 +1,20 @@
-const initSqlJs = require('sql.js');
-const path = require('path');
-const fs = require('fs');
-
-// Use /tmp on Vercel (serverless), otherwise use local path
-const isVercel = process.env.VERCEL === '1';
-const dbPath = isVercel
-  ? '/tmp/database.db'
-  : path.join(__dirname, '../database.db');
+const { createClient } = require('@libsql/client');
 
 let db = null;
-let initPromise = null;
 
 const getDatabase = () => {
   if (db) return Promise.resolve(db);
-  if (initPromise) return initPromise;
 
-  initPromise = (async () => {
-    const SQL = await initSqlJs();
+  // Use Turso cloud URL + auth token when available,
+  // otherwise fall back to a local SQLite file for development
+  const url = process.env.TURSO_DATABASE_URL || 'file:./database.db';
+  const authToken = process.env.TURSO_AUTH_TOKEN || undefined;
 
-    try {
-      if (fs.existsSync(dbPath)) {
-        const buffer = fs.readFileSync(dbPath);
-        db = new SQL.Database(buffer);
-      } else {
-        db = new SQL.Database();
-      }
-    } catch (err) {
-      console.error('Error loading database file, creating new one:', err.message);
-      db = new SQL.Database();
-    }
+  db = createClient({ url, authToken });
 
+  return (async () => {
     // Create tables
-    db.run(`CREATE TABLE IF NOT EXISTS users (
+    await db.execute(`CREATE TABLE IF NOT EXISTS users (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       username TEXT UNIQUE NOT NULL,
       email TEXT UNIQUE NOT NULL,
@@ -39,7 +22,7 @@ const getDatabase = () => {
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     )`);
 
-    db.run(`CREATE TABLE IF NOT EXISTS tasks (
+    await db.execute(`CREATE TABLE IF NOT EXISTS tasks (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       user_id INTEGER NOT NULL,
       task_name TEXT NOT NULL,
@@ -52,25 +35,15 @@ const getDatabase = () => {
     )`);
 
     // Add priority column if missing (existing databases)
-    try { db.run('ALTER TABLE tasks ADD COLUMN priority TEXT DEFAULT \'medium\''); } catch(e) {}
+    try { await db.execute("ALTER TABLE tasks ADD COLUMN priority TEXT DEFAULT 'medium'"); } catch(e) {}
 
     console.log('Database initialized successfully');
     return db;
   })();
-
-  return initPromise;
 };
 
-const saveDatabase = () => {
-  if (!db) return;
-  try {
-    const data = db.export();
-    const buffer = Buffer.from(data);
-    fs.writeFileSync(dbPath, buffer);
-  } catch (err) {
-    console.error('Error saving database:', err.message);
-  }
-};
+// No-op: Turso persists automatically, kept for API compatibility
+const saveDatabase = () => {};
 
 module.exports = {
   getDatabase,

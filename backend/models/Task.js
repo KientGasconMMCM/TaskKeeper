@@ -1,39 +1,41 @@
-const { getDatabase, saveDatabase } = require('./db');
+const { getDatabase } = require('./db');
 
 const Task = {
   create: async (userId, taskName, taskDescription, deadline, priority) => {
     const db = await getDatabase();
     const p = priority || 'medium';
-    db.run('INSERT INTO tasks (user_id, task_name, task_description, deadline, priority) VALUES (?, ?, ?, ?, ?)', [userId, taskName, taskDescription, deadline, p]);
-    const result = db.exec('SELECT last_insert_rowid() as id');
-    const id = result[0].values[0][0];
-    saveDatabase();
+    const result = await db.execute({
+      sql: 'INSERT INTO tasks (user_id, task_name, task_description, deadline, priority) VALUES (?, ?, ?, ?, ?)',
+      args: [userId, taskName, taskDescription, deadline, p]
+    });
+    const id = Number(result.lastInsertRowid);
     return { id, userId, taskName, taskDescription, deadline, priority: p };
   },
 
   getByUserId: async (userId) => {
     const db = await getDatabase();
-    const stmt = db.prepare('SELECT * FROM tasks WHERE user_id = ? ORDER BY deadline');
-    stmt.bind([userId]);
-    const tasks = [];
-    while (stmt.step()) {
-      tasks.push(stmt.getAsObject());
-    }
-    stmt.free();
-    return tasks;
+    const result = await db.execute({
+      sql: 'SELECT * FROM tasks WHERE user_id = ? ORDER BY deadline',
+      args: [userId]
+    });
+    return result.rows;
   },
 
   update: async (taskId, taskName, taskDescription, deadline, status, priority) => {
     const db = await getDatabase();
     const p = priority || 'medium';
-    db.run('UPDATE tasks SET task_name = ?, task_description = ?, deadline = ?, status = ?, priority = ? WHERE id = ?', [taskName, taskDescription, deadline, status, p, taskId]);
-    saveDatabase();
+    await db.execute({
+      sql: 'UPDATE tasks SET task_name = ?, task_description = ?, deadline = ?, status = ?, priority = ? WHERE id = ?',
+      args: [taskName, taskDescription, deadline, status, p, taskId]
+    });
   },
 
   delete: async (taskId) => {
     const db = await getDatabase();
-    db.run('DELETE FROM tasks WHERE id = ?', [taskId]);
-    saveDatabase();
+    await db.execute({
+      sql: 'DELETE FROM tasks WHERE id = ?',
+      args: [taskId]
+    });
   }
 };
 
