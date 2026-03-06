@@ -13,6 +13,10 @@ const getDatabase = () => {
     const url = process.env.TURSO_DATABASE_URL || 'file:./database.db';
     const authToken = process.env.TURSO_AUTH_TOKEN || undefined;
 
+    if (!process.env.TURSO_DATABASE_URL && process.env.VERCEL) {
+      console.warn('WARNING: TURSO_DATABASE_URL not set. Local SQLite will not persist on Vercel serverless.');
+    }
+
     console.log('Connecting to database:', url ? url.replace(/\/\/.*@/, '//***@') : 'file:./database.db');
 
     const client = createClient({ url, authToken });

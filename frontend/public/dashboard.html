@@ -551,13 +551,15 @@
                     const data = await response.json();
                     allTasks = data.tasks || [];
                     renderTasks(allTasks);
-                } else if (response.status === 401) {
+                } else if (response.status === 401 || response.status === 403) {
+                    localStorage.removeItem('token');
                     window.location.href = 'login.html';
                 } else {
+                    console.error('Failed to load tasks, status:', response.status);
                     showAlert('Failed to load tasks', 'error');
                 }
             } catch (error) {
-                showAlert('An error occurred while loading tasks', 'error');
+                showAlert('Could not connect to server', 'error');
                 console.error('Error:', error);
             }
         }
