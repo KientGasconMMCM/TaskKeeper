@@ -14,12 +14,18 @@ const getDatabase = () => {
     const authToken = process.env.TURSO_AUTH_TOKEN || undefined;
 
     if (!process.env.TURSO_DATABASE_URL && process.env.VERCEL) {
-      console.warn('WARNING: TURSO_DATABASE_URL not set. Local SQLite will not persist on Vercel serverless.');
+      // On Vercel the filesystem is read-only; SQLite file won't persist.
+      // Use /tmp if we must fall back, but data will be lost between invocations.
+      console.warn('WARNING: TURSO_DATABASE_URL not set. Using ephemeral /tmp SQLite on Vercel.');
     }
 
-    console.log('Connecting to database:', url ? url.replace(/\/\/.*@/, '//***@') : 'file:./database.db');
+    const effectiveUrl = (!process.env.TURSO_DATABASE_URL && process.env.VERCEL)
+      ? 'file:/tmp/database.db'
+      : url;
 
-    const client = createClient({ url, authToken });
+    console.log('Connecting to database:', effectiveUrl.replace(/\/\/.*@/, '//***@'));
+
+    const client = createClient({ url: effectiveUrl, authToken });
 
     // Create tables
     await client.execute(`CREATE TABLE IF NOT EXISTS users (
