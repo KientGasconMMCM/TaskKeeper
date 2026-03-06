@@ -7,3 +7,5 @@ build/
 *.log
 npm-debug.log*
 database.db
+.vercel
+.env*.local
