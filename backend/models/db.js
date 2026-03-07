@@ -1,68 +1,53 @@
-const { createClient } = require('@libsql/client');
+const { neon } = require('@neondatabase/serverless');
 
-let db = null;
-let initPromise = null;
+let sql = null;
 
 const getDatabase = () => {
-  if (db) return Promise.resolve(db);
-  if (initPromise) return initPromise;
+  if (sql) return Promise.resolve(sql);
 
-  initPromise = (async () => {
-    // Use Turso cloud URL + auth token when available,
-    // otherwise fall back to a local SQLite file for development
-    const url = process.env.TURSO_DATABASE_URL || 'file:./database.db';
-    const authToken = process.env.TURSO_AUTH_TOKEN || undefined;
+  const connectionString = process.env.DATABASE_URL;
+  if (!connectionString) {
+    throw new Error('DATABASE_URL environment variable is not set. Get one free at https://neon.tech');
+  }
 
-    if (!process.env.TURSO_DATABASE_URL && process.env.VERCEL) {
-      // On Vercel the filesystem is read-only; SQLite file won't persist.
-      // Use /tmp if we must fall back, but data will be lost between invocations.
-      console.warn('WARNING: TURSO_DATABASE_URL not set. Using ephemeral /tmp SQLite on Vercel.');
-    }
-
-    const effectiveUrl = (!process.env.TURSO_DATABASE_URL && process.env.VERCEL)
-      ? 'file:/tmp/database.db'
-      : url;
-
-    console.log('Connecting to database:', effectiveUrl.replace(/\/\/.*@/, '//***@'));
-
-    const client = createClient({ url: effectiveUrl, authToken });
-
-    // Create tables
-    await client.execute(`CREATE TABLE IF NOT EXISTS users (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      username TEXT UNIQUE NOT NULL,
-      email TEXT UNIQUE NOT NULL,
-      password TEXT NOT NULL,
-      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-    )`);
-
-    await client.execute(`CREATE TABLE IF NOT EXISTS tasks (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      user_id INTEGER NOT NULL,
-      task_name TEXT NOT NULL,
-      task_description TEXT,
-      deadline DATETIME,
-      priority TEXT DEFAULT 'medium',
-      status TEXT DEFAULT 'pending',
-      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-      FOREIGN KEY (user_id) REFERENCES users(id)
-    )`);
-
-    // Add priority column if missing (existing databases)
-    try { await client.execute("ALTER TABLE tasks ADD COLUMN priority TEXT DEFAULT 'medium'"); } catch(e) {}
-
-    console.log('Database initialized successfully');
-    db = client;
-    return db;
-  })();
-
-  return initPromise;
+  sql = neon(connectionString);
+  return Promise.resolve(sql);
 };
 
-// No-op: Turso persists automatically, kept for API compatibility
+const initDatabase = async () => {
+  const sql = await getDatabase();
+
+  await sql(`CREATE TABLE IF NOT EXISTS users (
+    id SERIAL PRIMARY KEY,
+    username TEXT UNIQUE NOT NULL,
+    email TEXT UNIQUE NOT NULL,
+    password TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  )`);
+
+  await sql(`CREATE TABLE IF NOT EXISTS tasks (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER NOT NULL REFERENCES users(id),
+    task_name TEXT NOT NULL,
+    task_description TEXT,
+    deadline TIMESTAMP,
+    priority TEXT DEFAULT 'medium',
+    status TEXT DEFAULT 'pending',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  )`);
+
+  // Add priority column if missing (existing databases)
+  try {
+    await sql(`ALTER TABLE tasks ADD COLUMN IF NOT EXISTS priority TEXT DEFAULT 'medium'`);
+  } catch(e) {}
+
+  console.log('Database initialized successfully');
+};
+
 const saveDatabase = () => {};
 
 module.exports = {
   getDatabase,
+  initDatabase,
   saveDatabase
 };

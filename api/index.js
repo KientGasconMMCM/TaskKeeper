@@ -6,10 +6,26 @@ const cors = require('cors');
 const envPath = path.join(__dirname, '../backend/.env');
 try { require('dotenv').config({ path: envPath }); } catch (e) { /* dotenv optional */ }
 
+const { initDatabase } = require('../backend/models/db');
 const authRoutes = require('../backend/routes/auth');
 const taskRoutes = require('../backend/routes/tasks');
 
 const app = express();
+
+// Initialize database tables on first request
+let dbInitialized = false;
+app.use(async (req, res, next) => {
+  if (!dbInitialized) {
+    try {
+      await initDatabase();
+      dbInitialized = true;
+    } catch (err) {
+      console.error('Database init error:', err);
+      return res.status(500).json({ message: 'Database connection failed' });
+    }
+  }
+  next();
+});
 
 // Middleware
 app.use(cors({
