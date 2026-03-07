@@ -20,8 +20,9 @@ app.use(async (req, res, next) => {
       await initDatabase();
       dbInitialized = true;
     } catch (err) {
-      console.error('Database init error:', err);
-      return res.status(500).json({ message: 'Database connection failed' });
+      console.error('Database init error:', err.message, err.stack);
+      console.error('DATABASE_URL set:', !!process.env.DATABASE_URL);
+      return res.status(500).json({ message: 'Database connection failed', error: err.message });
     }
   }
   next();
