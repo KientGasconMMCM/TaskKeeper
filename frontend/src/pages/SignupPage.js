@@ -80,6 +80,9 @@ function SignupPage({ onSignup }) {
               onChange={handleChange}
               required
             />
+            <small style={{ color: '#f1c40f', marginTop: '5px', display: 'block' }}>
+              💡 Use a personal email (Gmail, Outlook) — school emails may block password reset emails.
+            </small>
           </div>
 
           <div className="form-group">

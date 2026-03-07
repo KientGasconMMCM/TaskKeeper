@@ -101,23 +101,12 @@ router.post('/forgot-password', async (req, res) => {
     const host = req.headers['x-forwarded-host'] || req.headers.host;
     const baseUrl = `${protocol}://${host}`;
 
-    // Check SMTP config before attempting to send
-    if (!process.env.SMTP_HOST || !process.env.SMTP_USER || !process.env.SMTP_PASS) {
-      console.error('Missing SMTP env vars:', {
-        SMTP_HOST: !!process.env.SMTP_HOST,
-        SMTP_USER: !!process.env.SMTP_USER,
-        SMTP_PASS: !!process.env.SMTP_PASS,
-        SMTP_PORT: process.env.SMTP_PORT || '(not set, defaults to 587)',
-      });
-      return res.status(500).json({ message: 'Email service is not configured' });
-    }
-
     await sendResetEmail(email, resetToken, baseUrl);
 
     res.json({ message: 'Password reset link sent to your email' });
   } catch (err) {
-    console.error('Forgot password error:', err.message, err.stack);
-    res.status(500).json({ message: 'Error sending reset email. Please try again later.' });
+    console.error('Forgot password error:', err);
+    res.status(500).json({ message: 'Error processing request' });
   }
 });
 
@@ -157,6 +146,12 @@ router.post('/reset-password', async (req, res) => {
     const user = await User.findByResetToken(token);
     if (!user) {
       return res.status(400).json({ message: 'Invalid or expired reset token' });
+    }
+
+    // Check if new password is the same as the old one
+    const isSamePassword = bcrypt.compareSync(newPassword, user.password);
+    if (isSamePassword) {
+      return res.status(400).json({ message: 'No previous passwords — please choose a different password' });
     }
 
     await User.updatePassword(user.email, newPassword);
