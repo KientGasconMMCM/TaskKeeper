@@ -7,14 +7,14 @@ const router = express.Router();
 // Create task
 router.post('/', authMiddleware, async (req, res) => {
   try {
-    const { taskName, taskDescription, deadline, priority } = req.body;
+    const { taskName, taskDescription, deadline, priority, category } = req.body;
     const userId = req.userId;
 
     if (!taskName) {
       return res.status(400).json({ message: 'Task name is required' });
     }
 
-    const task = await Task.create(userId, taskName, taskDescription, deadline, priority);
+    const task = await Task.create(userId, taskName, taskDescription, deadline, priority, category);
     res.json({ message: 'Task created successfully', task });
   } catch (err) {
     console.error('Create task error:', err);
@@ -37,14 +37,14 @@ router.get('/', authMiddleware, async (req, res) => {
 // Update task
 router.put('/:id', authMiddleware, async (req, res) => {
   try {
-    const { taskName, taskDescription, deadline, status, priority } = req.body;
+    const { taskName, taskDescription, deadline, status, priority, category } = req.body;
     const taskId = req.params.id;
 
     if (!taskName) {
       return res.status(400).json({ message: 'Task name is required' });
     }
 
-    await Task.update(taskId, taskName, taskDescription, deadline, status, priority);
+    await Task.update(taskId, taskName, taskDescription, deadline, status, priority, category);
     res.json({ message: 'Task updated successfully' });
   } catch (err) {
     console.error('Update task error:', err);

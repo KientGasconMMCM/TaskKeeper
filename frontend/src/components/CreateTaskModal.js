@@ -6,6 +6,7 @@ function CreateTaskModal({ onClose, onCreate }) {
     taskName: '',
     taskDescription: '',
     deadline: '',
+    category: '',
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -31,7 +32,7 @@ function CreateTaskModal({ onClose, onCreate }) {
 
     try {
       await onCreate(formData);
-      setFormData({ taskName: '', taskDescription: '', deadline: '' });
+      setFormData({ taskName: '', taskDescription: '', deadline: '', category: '' });
     } catch (err) {
       setError('Error creating task');
     } finally {
@@ -84,6 +85,21 @@ function CreateTaskModal({ onClose, onCreate }) {
                 value={formData.deadline}
                 onChange={handleChange}
               />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="category">Category</label>
+              <select
+                id="category"
+                name="category"
+                value={formData.category}
+                onChange={handleChange}
+              >
+                <option value="">None</option>
+                <option value="Game">Game</option>
+                <option value="School">School</option>
+                <option value="Work">Work</option>
+              </select>
             </div>
 
             <div className="modal-footer">

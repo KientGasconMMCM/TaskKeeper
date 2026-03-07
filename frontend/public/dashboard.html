@@ -210,6 +210,11 @@
             color: #2ecc71;
         }
 
+        .badge.category-badge {
+            background: rgba(155, 89, 182, 0.2);
+            color: #9b59b6;
+        }
+
         .task-actions {
             position: relative;
             margin-left: 20px;
@@ -455,6 +460,15 @@
                     <option value="completed">Completed</option>
                 </select>
             </div>
+            <div class="filter-group">
+                <label for="categoryFilter">Category:</label>
+                <select id="categoryFilter" onchange="filterTasks()">
+                    <option value="">All</option>
+                    <option value="Game">Game</option>
+                    <option value="School">School</option>
+                    <option value="Work">Work</option>
+                </select>
+            </div>
         </div>
 
         <div id="tasksContainer" class="tasks-container">
@@ -494,6 +508,15 @@
                     <option value="low">Low</option>
                     <option value="medium">Medium</option>
                     <option value="high">High</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="editTaskCategory">Category</label>
+                <select id="editTaskCategory">
+                    <option value="">None</option>
+                    <option value="Game">Game</option>
+                    <option value="School">School</option>
+                    <option value="Work">Work</option>
                 </select>
             </div>
             <div class="modal-btns">
@@ -586,15 +609,16 @@
                             ${task.deadline ? `<span>📅 ${new Date(task.deadline).toLocaleDateString()}</span>` : ''}
                             <span class="badge priority-${task.priority || 'medium'}">${task.priority ? task.priority.charAt(0).toUpperCase() + task.priority.slice(1) : 'Medium'}</span>
                             <span class="badge status-${task.status || 'pending'}">${task.status ? task.status.charAt(0).toUpperCase() + task.status.slice(1) : 'Pending'}</span>
+                            ${task.category ? `<span class="badge category-badge">${escapeHtml(task.category)}</span>` : ''}
                         </div>
                     </div>
                     <div class="task-actions">
                         <button class="kebab-btn" onclick="toggleMenu(event, ${task.id})" title="Actions">⋮</button>
                         <div class="dropdown-menu" id="menu-${task.id}">
-                            <button class="dropdown-item" onclick="openEditModal(${task.id}, '${escapeAttr(task.task_name)}', '${escapeAttr(task.task_description || '')}', '${task.deadline || ''}', '${task.status || 'pending'}', '${task.priority || 'medium'}')">
+                            <button class="dropdown-item" onclick="openEditModal(${task.id}, '${escapeAttr(task.task_name)}', '${escapeAttr(task.task_description || '')}', '${task.deadline || ''}', '${task.status || 'pending'}', '${task.priority || 'medium'}', '${escapeAttr(task.category || '')}')">
                                 ✏️ Edit
                             </button>
-                            <button class="dropdown-item" onclick="toggleTask(${task.id}, '${task.status || 'pending'}', '${escapeAttr(task.task_name)}', '${escapeAttr(task.task_description || '')}', '${task.deadline || ''}', '${task.priority || 'medium'}')">
+                            <button class="dropdown-item" onclick="toggleTask(${task.id}, '${task.status || 'pending'}', '${escapeAttr(task.task_name)}', '${escapeAttr(task.task_description || '')}', '${task.deadline || ''}', '${task.priority || 'medium'}', '${escapeAttr(task.category || '')}')">
                                 ${task.status === 'completed' ? '↩️ Undo' : '✅ Complete'}
                             </button>
                             <button class="dropdown-item delete" onclick="deleteTask(${task.id})">
@@ -609,17 +633,19 @@
         function filterTasks() {
             const priorityFilter = document.getElementById('priorityFilter').value;
             const statusFilter = document.getElementById('statusFilter').value;
+            const categoryFilter = document.getElementById('categoryFilter').value;
 
             const filtered = allTasks.filter(task => {
                 const priorityMatch = !priorityFilter || task.priority === priorityFilter;
                 const statusMatch = !statusFilter || task.status === statusFilter;
-                return priorityMatch && statusMatch;
+                const categoryMatch = !categoryFilter || task.category === categoryFilter;
+                return priorityMatch && statusMatch && categoryMatch;
             });
 
             renderTasks(filtered);
         }
 
-        async function toggleTask(taskId, currentStatus, taskName, taskDescription, deadline, priority) {
+        async function toggleTask(taskId, currentStatus, taskName, taskDescription, deadline, priority, category) {
             try {
                 const newStatus = currentStatus === 'completed' ? 'pending' : 'completed';
                 
@@ -629,7 +655,7 @@
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${localStorage.getItem('token')}`,
                     },
-                    body: JSON.stringify({ taskName, taskDescription, deadline, status: newStatus, priority }),
+                    body: JSON.stringify({ taskName, taskDescription, deadline, status: newStatus, priority, category }),
                 });
 
                 if (response.ok) {
@@ -708,7 +734,7 @@
             }
         }
 
-        function openEditModal(taskId, name, description, deadline, status, priority) {
+        function openEditModal(taskId, name, description, deadline, status, priority, category) {
             document.querySelectorAll('.dropdown-menu').forEach(m => m.classList.remove('show'));
             document.getElementById('editTaskId').value = taskId;
             document.getElementById('editTaskName').value = name;
@@ -716,6 +742,7 @@
             document.getElementById('editTaskDeadline').value = deadline ? deadline.split('T')[0] : '';
             document.getElementById('editTaskStatus').value = status;
             document.getElementById('editTaskPriority').value = priority || 'medium';
+            document.getElementById('editTaskCategory').value = category || '';
             document.getElementById('editModal').classList.add('show');
         }
 
@@ -730,6 +757,7 @@
             const deadline = document.getElementById('editTaskDeadline').value;
             const status = document.getElementById('editTaskStatus').value;
             const priority = document.getElementById('editTaskPriority').value;
+            const category = document.getElementById('editTaskCategory').value;
 
             if (!taskName) {
                 alert('Task name is required');
@@ -743,7 +771,7 @@
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${localStorage.getItem('token')}`,
                     },
-                    body: JSON.stringify({ taskName, taskDescription, deadline, status, priority }),
+                    body: JSON.stringify({ taskName, taskDescription, deadline, status, priority, category }),
                 });
 
                 if (response.ok) {

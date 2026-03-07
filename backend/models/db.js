@@ -34,6 +34,7 @@ const initDatabase = async () => {
     task_description TEXT,
     deadline TIMESTAMP,
     priority TEXT DEFAULT 'medium',
+    category TEXT DEFAULT NULL,
     status TEXT DEFAULT 'pending',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
   )`);
@@ -41,6 +42,11 @@ const initDatabase = async () => {
   // Add priority column if missing (existing databases)
   try {
     await sql(`ALTER TABLE tasks ADD COLUMN IF NOT EXISTS priority TEXT DEFAULT 'medium'`);
+  } catch(e) {}
+
+  // Add category column if missing (existing databases)
+  try {
+    await sql(`ALTER TABLE tasks ADD COLUMN IF NOT EXISTS category TEXT DEFAULT NULL`);
   } catch(e) {}
 
   // Add reset token columns if missing (existing databases)
