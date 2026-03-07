@@ -22,6 +22,8 @@ const initDatabase = async () => {
     username TEXT UNIQUE NOT NULL,
     email TEXT UNIQUE NOT NULL,
     password TEXT NOT NULL,
+    reset_token TEXT,
+    reset_token_expires TIMESTAMP,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
   )`);
 
@@ -39,6 +41,12 @@ const initDatabase = async () => {
   // Add priority column if missing (existing databases)
   try {
     await sql(`ALTER TABLE tasks ADD COLUMN IF NOT EXISTS priority TEXT DEFAULT 'medium'`);
+  } catch(e) {}
+
+  // Add reset token columns if missing (existing databases)
+  try {
+    await sql(`ALTER TABLE users ADD COLUMN IF NOT EXISTS reset_token TEXT`);
+    await sql(`ALTER TABLE users ADD COLUMN IF NOT EXISTS reset_token_expires TIMESTAMP`);
   } catch(e) {}
 
   console.log('Database initialized successfully');

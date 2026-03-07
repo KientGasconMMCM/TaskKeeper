@@ -43,7 +43,21 @@ const User = {
   updatePassword: async (email, newPassword) => {
     const sql = await getDatabase();
     const hashedPassword = bcrypt.hashSync(newPassword, 10);
-    await sql('UPDATE users SET password = $1 WHERE email = $2', [hashedPassword, email]);
+    await sql('UPDATE users SET password = $1, reset_token = NULL, reset_token_expires = NULL WHERE email = $2', [hashedPassword, email]);
+  },
+
+  setResetToken: async (email, token, expires) => {
+    const sql = await getDatabase();
+    await sql('UPDATE users SET reset_token = $1, reset_token_expires = $2 WHERE email = $3', [token, expires, email]);
+  },
+
+  findByResetToken: async (token) => {
+    const sql = await getDatabase();
+    const rows = await sql(
+      'SELECT * FROM users WHERE reset_token = $1 AND reset_token_expires > NOW()',
+      [token]
+    );
+    return rows.length > 0 ? rows[0] : null;
   }
 };
 
