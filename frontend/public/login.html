@@ -64,31 +64,40 @@
 
         input:focus {
             outline: none;
-            border-color: #0896ee;
-            box-shadow: 0 0 0 3px rgba(8, 150, 238, 0.1);
+            border-color: #0aabff;
+            box-shadow: 0 0 0 3px rgba(8, 150, 238, 0.2);
         }
 
         button {
             width: 100%;
-            padding: 12px;
+            padding: 14px;
             background-color: #0896ee;
             color: white;
-            border: none;
-            border-radius: 4px;
+            border: 2px solid #0896ee;
+            border-radius: 6px;
             font-size: 16px;
-            font-weight: 600;
+            font-weight: 700;
             cursor: pointer;
             transition: all 0.3s ease;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
         }
 
         button:hover {
-            background-color: #0682d6;
+            background-color: #0aabff;
+            border-color: #0aabff;
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(8, 150, 238, 0.3);
+            box-shadow: 0 6px 20px rgba(8, 150, 238, 0.4);
         }
 
         button:active {
             transform: translateY(0);
+            box-shadow: 0 2px 8px rgba(8, 150, 238, 0.3);
+        }
+
+        button:focus-visible {
+            outline: 2px solid #0aabff;
+            outline-offset: 2px;
         }
 
         .form-footer {
@@ -99,13 +108,17 @@
         }
 
         .form-footer a {
-            color: #0896ee;
+            color: #0aabff;
             text-decoration: none;
-            font-weight: 600;
+            font-weight: 700;
+            border-bottom: 2px solid transparent;
+            padding-bottom: 2px;
+            transition: all 0.3s ease;
         }
 
         .form-footer a:hover {
-            text-decoration: underline;
+            color: #3dc2ff;
+            border-bottom-color: #3dc2ff;
         }
 
         .alert {
@@ -154,7 +167,10 @@
                     placeholder="Enter your password" 
                     required
                 >
-                <a href="forgot-password.html" style="display: block; text-align: right; margin-top: 6px; font-size: 13px; color: #0896ee; text-decoration: none;">Forgot password?</a>
+                <a href="forgot-password.html" style="display: block; text-align: right; margin-top: 6px; font-size: 13px; color: #0aabff; text-decoration: none; font-weight: 600; border-bottom: 2px solid transparent; display: inline-block; float: right; padding-bottom: 1px; transition: all 0.3s ease;"
+                   onmouseover="this.style.color='#3dc2ff'; this.style.borderBottomColor='#3dc2ff';"
+                   onmouseout="this.style.color='#0aabff'; this.style.borderBottomColor='transparent';"
+                >Forgot password?</a>
             </div>
 
             <button type="submit">Sign In</button>
