@@ -685,10 +685,22 @@
         }
 
         function renderTaskItem(task, isCompleted) {
-            const editButton = isCompleted ? '' : `
-                <button class="dropdown-item" onclick="openEditModal(${task.id}, '${escapeAttr(task.task_name)}', '${escapeAttr(task.task_description || '')}', '${task.deadline || ''}', '${task.status || 'pending'}', '${task.priority || 'medium'}', '${escapeAttr(task.category || '')}')">
-                    ✏️ Edit
-                </button>`;
+            if (isCompleted) {
+                return `
+                    <div class="task-item">
+                        <div class="task-info">
+                            <div class="task-title">${escapeHtml(task.task_name)}</div>
+                            ${task.task_description ? `<div class="task-description">${escapeHtml(task.task_description)}</div>` : ''}
+                            <div class="task-meta">
+                                ${task.deadline ? `<span>📅 ${new Date(task.deadline).toLocaleDateString()}</span>` : ''}
+                                <span class="badge priority-${task.priority || 'medium'}">${task.priority ? task.priority.charAt(0).toUpperCase() + task.priority.slice(1) : 'Medium'}</span>
+                                <span class="badge status-completed">Completed</span>
+                                ${task.category ? `<span class="badge category-badge">${escapeHtml(task.category)}</span>` : ''}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
 
             return `
                 <div class="task-item">
@@ -705,9 +717,11 @@
                     <div class="task-actions">
                         <button class="kebab-btn" onclick="toggleMenu(event, ${task.id})" title="Actions">⋮</button>
                         <div class="dropdown-menu" id="menu-${task.id}">
-                            ${editButton}
+                            <button class="dropdown-item" onclick="openEditModal(${task.id}, '${escapeAttr(task.task_name)}', '${escapeAttr(task.task_description || '')}', '${task.deadline || ''}', '${task.status || 'pending'}', '${task.priority || 'medium'}', '${escapeAttr(task.category || '')}')">
+                                ✏️ Edit
+                            </button>
                             <button class="dropdown-item" onclick="toggleTask(${task.id}, '${task.status || 'pending'}', '${escapeAttr(task.task_name)}', '${escapeAttr(task.task_description || '')}', '${task.deadline || ''}', '${task.priority || 'medium'}', '${escapeAttr(task.category || '')}')">
-                                ${task.status === 'completed' ? '↩️ Undo' : '✅ Complete'}
+                                ✅ Complete
                             </button>
                             <button class="dropdown-item delete" onclick="deleteTask(${task.id})">
                                 🗑️ Delete

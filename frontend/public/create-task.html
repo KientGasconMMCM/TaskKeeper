@@ -281,11 +281,35 @@
         createTaskForm.addEventListener('submit', async (e) => {
             e.preventDefault();
 
-            const taskName = document.getElementById('title').value;
+            const taskName = document.getElementById('title').value.trim();
             const taskDescription = document.getElementById('description').value;
             const deadline = document.getElementById('dueDate').value;
             const priority = document.getElementById('priority').value;
             const category = document.getElementById('category').value;
+
+            if (!deadline) {
+                showAlert('Please set a deadline for your task.', 'error');
+                return;
+            }
+
+            // Check for duplicate task title
+            try {
+                const tasksRes = await fetch('/api/tasks', {
+                    headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` },
+                });
+                if (tasksRes.ok) {
+                    const tasksData = await tasksRes.json();
+                    const duplicate = (tasksData.tasks || []).some(
+                        t => t.task_name.toLowerCase() === taskName.toLowerCase()
+                    );
+                    if (duplicate) {
+                        showAlert('A task with this title already exists. Please use a different title.', 'error');
+                        return;
+                    }
+                }
+            } catch (err) {
+                console.error('Error checking duplicates:', err);
+            }
 
             try {
                 const response = await fetch('/api/tasks', {
