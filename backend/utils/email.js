@@ -87,4 +87,26 @@ const sendDeadlineReminderEmail = async (toEmail, task) => {
   await transporter.sendMail(mailOptions);
 };
 
-module.exports = { sendResetEmail, sendTaskCreatedEmail, sendDeadlineReminderEmail };
+const sendWelcomeEmail = async (toEmail, username) => {
+  const mailOptions = {
+    from: process.env.SMTP_FROM || process.env.SMTP_USER,
+    to: toEmail,
+    subject: 'Welcome to TaskKeeper!',
+    html: `
+      <div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 500px; margin: 0 auto; padding: 30px; background: #1a2332; border-radius: 8px; color: #fff;">
+        <h1 style="color: #0896ee; text-align: center; margin-bottom: 20px;">TaskKeeper</h1>
+        <h2 style="text-align: center; margin-bottom: 20px; color: #2ecc71;">Welcome, ${username}!</h2>
+        <p style="color: #ccc; line-height: 1.6; text-align: center;">Your account has been created successfully. You're all set to start organizing your tasks, tracking deadlines, and staying on top of what matters.</p>
+        <div style="background: #0f1419; border: 1px solid #2a3a4a; border-radius: 8px; padding: 20px; margin: 20px 0; text-align: center;">
+          <p style="color: #0896ee; font-size: 16px; font-weight: 600; margin: 0 0 8px 0;">Get started:</p>
+          <p style="color: #ccc; margin: 0;">Create your first task and set a deadline to stay organized.</p>
+        </div>
+        <p style="color: #999; font-size: 13px; text-align: center;">Thank you for choosing TaskKeeper!</p>
+      </div>
+    `,
+  };
+
+  await transporter.sendMail(mailOptions);
+};
+
+module.exports = { sendResetEmail, sendTaskCreatedEmail, sendDeadlineReminderEmail, sendWelcomeEmail };

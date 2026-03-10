@@ -194,6 +194,112 @@
             border: 1px solid rgba(46, 204, 113, 0.3);
         }
 
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(4px);
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: #1a2332;
+            border: 1px solid #2a3a4a;
+            border-radius: 10px;
+            padding: 30px;
+            width: 90%;
+            max-width: 480px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+        }
+
+        .modal h2 {
+            color: #fff;
+            margin-bottom: 6px;
+            font-size: 20px;
+        }
+
+        .modal .modal-subtitle {
+            color: #999;
+            font-size: 13px;
+            margin-bottom: 20px;
+        }
+
+        .modal .confirm-detail {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #2a3a4a;
+            font-size: 14px;
+        }
+
+        .modal .confirm-detail:last-of-type {
+            border-bottom: none;
+        }
+
+        .modal .confirm-label {
+            color: #999;
+            font-weight: 500;
+        }
+
+        .modal .confirm-value {
+            color: #fff;
+            font-weight: 600;
+            text-align: right;
+            max-width: 60%;
+            word-break: break-word;
+        }
+
+        .modal .modal-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 24px;
+        }
+
+        .modal .modal-buttons button {
+            flex: 1;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .modal .confirm-btn {
+            background: #0896ee;
+            color: #fff;
+            border: 2px solid #0896ee;
+        }
+
+        .modal .confirm-btn:hover {
+            background: #0aabff;
+            border-color: #0aabff;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(8, 150, 238, 0.3);
+        }
+
+        .modal .goback-btn {
+            background: #2a3a4a;
+            color: #ccc;
+            border: 2px solid #3a4a5a;
+        }
+
+        .modal .goback-btn:hover {
+            background: #3a4a5a;
+            border-color: #4a5a6a;
+            transform: translateY(-1px);
+        }
+
         @media (max-width: 600px) {
             .form-row {
                 grid-template-columns: 1fr;
@@ -284,6 +390,18 @@
         </form>
     </div>
 
+    <div class="modal-overlay" id="confirmModal">
+        <div class="modal">
+            <h2>Confirm Task Details</h2>
+            <p class="modal-subtitle">Please review your task before creating it.</p>
+            <div id="confirmDetails"></div>
+            <div class="modal-buttons">
+                <button class="confirm-btn" id="confirmCreateBtn">Yes, Create Task</button>
+                <button class="goback-btn" id="cancelModalBtn">Go Back</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         // Check if user is logged in
         window.addEventListener('load', () => {
@@ -341,6 +459,52 @@
                 console.error('Error checking duplicates:', err);
             }
 
+            // Show confirmation modal
+            showConfirmModal({ taskName, taskDescription, deadline, priority, category });
+        });
+
+        function showConfirmModal(taskData) {
+            const priorityLabels = { low: 'Low', medium: 'Medium', high: 'High' };
+            const details = document.getElementById('confirmDetails');
+            details.innerHTML = `
+                <div class="confirm-detail">
+                    <span class="confirm-label">Title</span>
+                    <span class="confirm-value">${escapeHtml(taskData.taskName)}</span>
+                </div>
+                <div class="confirm-detail">
+                    <span class="confirm-label">Description</span>
+                    <span class="confirm-value">${taskData.taskDescription ? escapeHtml(taskData.taskDescription) : '<em style="color:#666">None</em>'}</span>
+                </div>
+                <div class="confirm-detail">
+                    <span class="confirm-label">Due Date</span>
+                    <span class="confirm-value">${taskData.deadline}</span>
+                </div>
+                <div class="confirm-detail">
+                    <span class="confirm-label">Priority</span>
+                    <span class="confirm-value">${priorityLabels[taskData.priority] || taskData.priority}</span>
+                </div>
+                <div class="confirm-detail">
+                    <span class="confirm-label">Category</span>
+                    <span class="confirm-value">${escapeHtml(taskData.category)}</span>
+                </div>
+            `;
+            document.getElementById('confirmModal').classList.add('active');
+
+            document.getElementById('confirmCreateBtn').onclick = () => submitTask(taskData);
+            document.getElementById('cancelModalBtn').onclick = () => {
+                document.getElementById('confirmModal').classList.remove('active');
+            };
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        async function submitTask({ taskName, taskDescription, deadline, priority, category }) {
+            document.getElementById('confirmModal').classList.remove('active');
+
             try {
                 const response = await fetch('/api/tasks', {
                     method: 'POST',
@@ -371,7 +535,7 @@
                 showAlert('An error occurred. Please try again.', 'error');
                 console.error('Error:', error);
             }
-        });
+        }
 
         function showAlert(message, type) {
             alertDiv.textContent = message;

@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const bcrypt = require('bcryptjs');
 const User = require('../models/User');
-const { sendResetEmail } = require('../utils/email');
+const { sendResetEmail, sendWelcomeEmail } = require('../utils/email');
 
 const router = express.Router();
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
@@ -32,6 +32,9 @@ router.post('/signup', async (req, res) => {
     }
 
     const newUser = await User.create(username, email, password);
+
+    // Send welcome email (non-blocking)
+    sendWelcomeEmail(email, username).catch(err => console.error('Welcome email error:', err));
 
     const token = jwt.sign({ id: newUser.id, username: newUser.username }, JWT_SECRET, {
       expiresIn: '7d'
