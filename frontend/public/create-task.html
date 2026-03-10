@@ -292,6 +292,11 @@
                 return;
             }
 
+            if (!category) {
+                showAlert('Please select a category for your task.', 'error');
+                return;
+            }
+
             // Check for duplicate task title
             try {
                 const tasksRes = await fetch('/api/tasks', {
