@@ -292,6 +292,13 @@
                 return;
             }
 
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            if (new Date(deadline) < today) {
+                showAlert('You cannot set a deadline in the past. Please choose a future date.', 'error');
+                return;
+            }
+
             if (!category) {
                 showAlert('Please select a category for your task.', 'error');
                 return;
