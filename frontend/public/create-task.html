@@ -221,16 +221,17 @@
 
     <div class="container">
         <h1>Create New Task</h1>
+        <p style="color: #999; font-size: 14px; margin-bottom: 24px; line-height: 1.5;">Fill in the details below to add a new task. Set a deadline and priority to stay organized.</p>
         <div id="alert" class="alert"></div>
         
         <form id="createTaskForm">
             <div class="form-group">
-                <label for="title">Task Title *</label>
+                <label for="title">Task Title <span style="color: #e74c3c;">*</span></label>
                 <input 
                     type="text" 
                     id="title" 
                     name="title" 
-                    placeholder="Enter task title" 
+                    placeholder="e.g. Submit final report" 
                     required
                 >
             </div>
@@ -240,32 +241,34 @@
                 <textarea 
                     id="description" 
                     name="description" 
-                    placeholder="Enter task description (optional)"
+                    placeholder="What do you need to do? Add details so you remember later."
+                    rows="4"
                 ></textarea>
             </div>
 
             <div class="form-row">
                 <div class="form-group">
-                    <label for="dueDate">Due Date</label>
+                    <label for="dueDate">Due Date <span style="color: #e74c3c;">*</span></label>
                     <input 
                         type="date" 
                         id="dueDate" 
                         name="dueDate"
                     >
+                    <span style="font-size: 11px; color: #888; margin-top: 4px; display: block;">When does this need to be done?</span>
                 </div>
 
                 <div class="form-group">
                     <label for="priority">Priority</label>
                     <select id="priority" name="priority">
-                        <option value="low">Low</option>
-                        <option value="medium" selected>Medium</option>
-                        <option value="high">High</option>
+                        <option value="low">Low — No rush</option>
+                        <option value="medium" selected>Medium — Normal</option>
+                        <option value="high">High — Urgent</option>
                     </select>
                 </div>
             </div>
 
             <div class="form-group">
-                <label for="category">Category</label>
+                <label for="category">Category <span style="color: #e74c3c;">*</span></label>
                 <select id="category" name="category">
                     <option value="">None</option>
                     <option value="Game">Game</option>
