@@ -5,6 +5,8 @@ require('dotenv').config();
 const { initDatabase } = require('./models/db');
 const authRoutes = require('./routes/auth');
 const taskRoutes = require('./routes/tasks');
+const Task = require('./models/Task');
+const { sendDeadlineReminderEmail } = require('./utils/email');
 
 const app = express();
 
@@ -32,11 +34,34 @@ app.get('*', (req, res) => {
 
 const PORT = process.env.PORT || 5000;
 
+// Check for tasks with deadlines within 24 hours and send reminder emails
+async function checkDeadlineReminders() {
+  try {
+    const tasks = await Task.getUpcomingDeadlines();
+    for (const task of tasks) {
+      try {
+        await sendDeadlineReminderEmail(task.email, task);
+        await Task.markDeadlineNotified(task.id);
+        console.log(`Deadline reminder sent for task ${task.id} to ${task.email}`);
+      } catch (err) {
+        console.error(`Failed to send deadline reminder for task ${task.id}:`, err);
+      }
+    }
+  } catch (err) {
+    console.error('Error checking deadline reminders:', err);
+  }
+}
+
 initDatabase()
   .then(() => {
     app.listen(PORT, () => {
       console.log(`Server is running on port ${PORT}`);
     });
+
+    // Run deadline check every hour
+    setInterval(checkDeadlineReminders, 60 * 60 * 1000);
+    // Also run once on startup
+    checkDeadlineReminders();
   })
   .catch(err => {
     console.error('Failed to initialize database:', err);

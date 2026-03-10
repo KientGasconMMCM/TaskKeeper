@@ -33,6 +33,24 @@ const Task = {
   delete: async (taskId) => {
     const sql = await getDatabase();
     await sql('DELETE FROM tasks WHERE id = $1', [taskId]);
+  },
+
+  getUpcomingDeadlines: async () => {
+    const sql = await getDatabase();
+    return await sql(
+      `SELECT t.*, u.email FROM tasks t
+       JOIN users u ON t.user_id = u.id
+       WHERE t.deadline IS NOT NULL
+         AND t.status != 'completed'
+         AND t.deadline_notified = false
+         AND t.deadline > NOW()
+         AND t.deadline <= NOW() + INTERVAL '1 day'`
+    );
+  },
+
+  markDeadlineNotified: async (taskId) => {
+    const sql = await getDatabase();
+    await sql('UPDATE tasks SET deadline_notified = true WHERE id = $1', [taskId]);
   }
 };
 

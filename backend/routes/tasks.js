@@ -1,6 +1,8 @@
 const express = require('express');
 const authMiddleware = require('../middleware/auth');
 const Task = require('../models/Task');
+const User = require('../models/User');
+const { sendTaskCreatedEmail } = require('../utils/email');
 
 const router = express.Router();
 
@@ -15,6 +17,17 @@ router.post('/', authMiddleware, async (req, res) => {
     }
 
     const task = await Task.create(userId, taskName, taskDescription, deadline, priority, category);
+
+    // Send task creation email (non-blocking)
+    try {
+      const user = await User.findById(userId);
+      if (user && user.email) {
+        await sendTaskCreatedEmail(user.email, task);
+      }
+    } catch (emailErr) {
+      console.error('Failed to send task creation email:', emailErr);
+    }
+
     res.json({ message: 'Task created successfully', task });
   } catch (err) {
     console.error('Create task error:', err);

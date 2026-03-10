@@ -34,4 +34,57 @@ const sendResetEmail = async (toEmail, resetToken, baseUrl) => {
   await transporter.sendMail(mailOptions);
 };
 
-module.exports = { sendResetEmail };
+const sendTaskCreatedEmail = async (toEmail, task) => {
+  const deadlineText = task.deadline
+    ? new Date(task.deadline).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+    : 'No deadline set';
+
+  const mailOptions = {
+    from: process.env.SMTP_FROM || process.env.SMTP_USER,
+    to: toEmail,
+    subject: 'TaskKeeper - Created Task!',
+    html: `
+      <div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 500px; margin: 0 auto; padding: 30px; background: #1a2332; border-radius: 8px; color: #fff;">
+        <h1 style="color: #0896ee; text-align: center; margin-bottom: 20px;">TaskKeeper</h1>
+        <h2 style="text-align: center; margin-bottom: 20px; color: #2ecc71;">Created Task!</h2>
+        <div style="background: #0f1419; border: 1px solid #2a3a4a; border-radius: 8px; padding: 20px; margin: 20px 0;">
+          <p style="color: #0896ee; font-size: 18px; font-weight: 600; margin: 0 0 10px 0;">${task.taskName}</p>
+          <p style="color: #ccc; line-height: 1.6; margin: 0 0 10px 0;">${task.taskDescription || 'No description provided'}</p>
+          <p style="color: #999; font-size: 14px; margin: 0;">📅 Deadline: ${deadlineText}</p>
+        </div>
+        <p style="color: #999; font-size: 13px; text-align: center;">Stay on top of your tasks with TaskKeeper!</p>
+      </div>
+    `,
+  };
+
+  await transporter.sendMail(mailOptions);
+};
+
+const sendDeadlineReminderEmail = async (toEmail, task) => {
+  const deadlineText = new Date(task.deadline).toLocaleDateString('en-US', {
+    year: 'numeric', month: 'long', day: 'numeric',
+  });
+
+  const mailOptions = {
+    from: process.env.SMTP_FROM || process.env.SMTP_USER,
+    to: toEmail,
+    subject: 'DEADLINE REMINDER FOR TASKKEEPER!',
+    html: `
+      <div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 500px; margin: 0 auto; padding: 30px; background: #1a2332; border-radius: 8px; color: #fff;">
+        <h1 style="color: #0896ee; text-align: center; margin-bottom: 20px;">TaskKeeper</h1>
+        <h2 style="text-align: center; margin-bottom: 10px; color: #e74c3c;">⚠️ DEADLINE REMINDER!</h2>
+        <p style="text-align: center; color: #f1c40f; margin-bottom: 20px;">The following task is due tomorrow!</p>
+        <div style="background: #0f1419; border: 1px solid #e74c3c; border-radius: 8px; padding: 20px; margin: 20px 0;">
+          <p style="color: #e74c3c; font-size: 18px; font-weight: 600; margin: 0 0 10px 0;">${task.task_name}</p>
+          <p style="color: #ccc; line-height: 1.6; margin: 0 0 10px 0;">${task.task_description || 'No description provided'}</p>
+          <p style="color: #f1c40f; font-size: 14px; font-weight: 600; margin: 0;">📅 Deadline: ${deadlineText}</p>
+        </div>
+        <p style="color: #999; font-size: 13px; text-align: center;">Don't forget to complete this task before the deadline!</p>
+      </div>
+    `,
+  };
+
+  await transporter.sendMail(mailOptions);
+};
+
+module.exports = { sendResetEmail, sendTaskCreatedEmail, sendDeadlineReminderEmail };

@@ -49,6 +49,11 @@ const initDatabase = async () => {
     await sql(`ALTER TABLE tasks ADD COLUMN IF NOT EXISTS category TEXT DEFAULT NULL`);
   } catch(e) {}
 
+  // Add deadline_notified column if missing (existing databases)
+  try {
+    await sql(`ALTER TABLE tasks ADD COLUMN IF NOT EXISTS deadline_notified BOOLEAN DEFAULT false`);
+  } catch(e) {}
+
   // Add reset token columns if missing (existing databases)
   try {
     await sql(`ALTER TABLE users ADD COLUMN IF NOT EXISTS reset_token TEXT`);
