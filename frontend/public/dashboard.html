@@ -402,6 +402,61 @@
             border: 1px solid rgba(46, 204, 113, 0.3);
         }
 
+        .completed-toggle-btn {
+            width: 100%;
+            padding: 16px 20px;
+            margin-top: 20px;
+            background-color: rgba(46, 204, 113, 0.1);
+            border: 1px solid rgba(46, 204, 113, 0.3);
+            border-radius: 8px;
+            color: #2ecc71;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.3s ease;
+        }
+
+        .completed-toggle-btn:hover {
+            background-color: rgba(46, 204, 113, 0.18);
+            border-color: rgba(46, 204, 113, 0.5);
+        }
+
+        .completed-toggle-btn .toggle-arrow {
+            transition: transform 0.3s ease;
+            font-size: 12px;
+        }
+
+        .completed-toggle-btn.open .toggle-arrow {
+            transform: rotate(180deg);
+        }
+
+        .completed-section {
+            margin-top: 10px;
+            overflow: hidden;
+            max-height: 0;
+            transition: max-height 0.4s ease;
+        }
+
+        .completed-section.open {
+            max-height: 5000px;
+        }
+
+        .completed-section .tasks-container {
+            opacity: 0.8;
+        }
+
+        .completed-section .task-title {
+            text-decoration: line-through;
+            color: #888;
+        }
+
+        .completed-section .task-description {
+            text-decoration: line-through;
+        }
+
         @media (max-width: 768px) {
             .task-item {
                 flex-direction: column;
@@ -475,6 +530,14 @@
             <div class="empty-state">
                 <h3>Loading tasks...</h3>
             </div>
+        </div>
+
+        <button class="completed-toggle-btn" id="completedToggleBtn" onclick="toggleCompletedSection()" style="display:none;">
+            <span>✅ Completed Tasks (<span id="completedCount">0</span>)</span>
+            <span class="toggle-arrow">▼</span>
+        </button>
+        <div class="completed-section" id="completedSection">
+            <div id="completedTasksContainer" class="tasks-container"></div>
         </div>
     </div>
 
@@ -589,18 +652,45 @@
 
         function renderTasks(tasks) {
             const container = document.getElementById('tasksContainer');
+            const completedContainer = document.getElementById('completedTasksContainer');
+            const completedToggleBtn = document.getElementById('completedToggleBtn');
+            const completedCountEl = document.getElementById('completedCount');
 
-            if (tasks.length === 0) {
+            const activeTasks = tasks.filter(t => t.status !== 'completed');
+            const completedTasks = tasks.filter(t => t.status === 'completed');
+
+            // Render active tasks
+            if (activeTasks.length === 0) {
                 container.innerHTML = `
                     <div class="empty-state">
                         <h3>No tasks yet</h3>
                         <p>Create your first task to get started</p>
                     </div>
                 `;
-                return;
+            } else {
+                container.innerHTML = activeTasks.map(task => renderTaskItem(task, false)).join('');
             }
 
-            container.innerHTML = tasks.map(task => `
+            // Render completed tasks section
+            if (completedTasks.length > 0) {
+                completedToggleBtn.style.display = 'flex';
+                completedCountEl.textContent = completedTasks.length;
+                completedContainer.innerHTML = completedTasks.map(task => renderTaskItem(task, true)).join('');
+            } else {
+                completedToggleBtn.style.display = 'none';
+                completedContainer.innerHTML = '';
+                document.getElementById('completedSection').classList.remove('open');
+                completedToggleBtn.classList.remove('open');
+            }
+        }
+
+        function renderTaskItem(task, isCompleted) {
+            const editButton = isCompleted ? '' : `
+                <button class="dropdown-item" onclick="openEditModal(${task.id}, '${escapeAttr(task.task_name)}', '${escapeAttr(task.task_description || '')}', '${task.deadline || ''}', '${task.status || 'pending'}', '${task.priority || 'medium'}', '${escapeAttr(task.category || '')}')">
+                    ✏️ Edit
+                </button>`;
+
+            return `
                 <div class="task-item">
                     <div class="task-info">
                         <div class="task-title">${escapeHtml(task.task_name)}</div>
@@ -615,9 +705,7 @@
                     <div class="task-actions">
                         <button class="kebab-btn" onclick="toggleMenu(event, ${task.id})" title="Actions">⋮</button>
                         <div class="dropdown-menu" id="menu-${task.id}">
-                            <button class="dropdown-item" onclick="openEditModal(${task.id}, '${escapeAttr(task.task_name)}', '${escapeAttr(task.task_description || '')}', '${task.deadline || ''}', '${task.status || 'pending'}', '${task.priority || 'medium'}', '${escapeAttr(task.category || '')}')">
-                                ✏️ Edit
-                            </button>
+                            ${editButton}
                             <button class="dropdown-item" onclick="toggleTask(${task.id}, '${task.status || 'pending'}', '${escapeAttr(task.task_name)}', '${escapeAttr(task.task_description || '')}', '${task.deadline || ''}', '${task.priority || 'medium'}', '${escapeAttr(task.category || '')}')">
                                 ${task.status === 'completed' ? '↩️ Undo' : '✅ Complete'}
                             </button>
@@ -627,7 +715,14 @@
                         </div>
                     </div>
                 </div>
-            `).join('');
+            `;
+        }
+
+        function toggleCompletedSection() {
+            const section = document.getElementById('completedSection');
+            const btn = document.getElementById('completedToggleBtn');
+            section.classList.toggle('open');
+            btn.classList.toggle('open');
         }
 
         function filterTasks() {
