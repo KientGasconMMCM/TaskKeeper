@@ -25,6 +25,7 @@ function TaskTable({ tasks, onDelete }) {
                 <th>NAME</th>
                 <th>TASKS</th>
                 <th>DEADLINE</th>
+                <th>PRIORITY SCORE</th>
               </tr>
             </thead>
             <tbody>
@@ -33,6 +34,7 @@ function TaskTable({ tasks, onDelete }) {
                   <td>{task.task_name}</td>
                   <td>{task.task_description || '-'}</td>
                   <td>{formatDate(task.deadline)}</td>
+                  <td>{typeof task.priority_score === 'number' ? task.priority_score.toFixed(1) : '-'}</td>
                 </tr>
               ))}
             </tbody>
