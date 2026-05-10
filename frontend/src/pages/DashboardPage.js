@@ -28,6 +28,7 @@ function DashboardPage({ user, onLogout }) {
   const [assistantMessages, setAssistantMessages] = useState(INITIAL_ASSISTANT_MESSAGES);
   const [assistantInput, setAssistantInput] = useState('');
   const [assistantLoading, setAssistantLoading] = useState(false);
+  const [chatOpen, setChatOpen] = useState(true);
   const navigate = useNavigate();
   const assistantScrollRef = useRef(null);
   const token = localStorage.getItem('token');
@@ -159,13 +160,19 @@ function DashboardPage({ user, onLogout }) {
               )}
             </div>
 
-            <aside className="assistant-card">
+            {chatOpen && <aside className="assistant-card">
               <div className="assistant-card-header">
                 <div>
                   <p className="assistant-eyebrow">AI chat box</p>
                   <h2>Assignment Coach</h2>
                 </div>
-                <span className="assistant-status">Live helper</span>
+                <button
+                  className="assistant-close-btn"
+                  onClick={() => setChatOpen(false)}
+                  title="Minimize Chat"
+                >
+                  −
+                </button>
               </div>
 
               <div className="assistant-messages" ref={assistantScrollRef}>
@@ -213,7 +220,19 @@ function DashboardPage({ user, onLogout }) {
                   {assistantLoading ? 'Sending...' : 'Send'}
                 </button>
               </div>
-            </aside>
+            </aside>}
+
+            {!chatOpen && (
+              <div className="chat-toggle-button-container">
+                <button
+                  className="chat-toggle-button"
+                  onClick={() => setChatOpen(true)}
+                  title="Open Study Coach Chat"
+                >
+                  💬
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>
