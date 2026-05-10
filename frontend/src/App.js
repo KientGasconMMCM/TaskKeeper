@@ -4,6 +4,7 @@ import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import DashboardPage from './pages/DashboardPage';
+import StudyCoachPage from './pages/StudyCoachPage';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -56,6 +57,7 @@ function App() {
         ) : (
           <>
             <Route path="/dashboard" element={<DashboardPage user={user} onLogout={handleLogout} />} />
+            <Route path="/coach" element={<StudyCoachPage user={user} onLogout={handleLogout} />} />
             <Route path="*" element={<Navigate to="/dashboard" />} />
           </>
         )}

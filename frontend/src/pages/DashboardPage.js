@@ -77,6 +77,9 @@ function DashboardPage({ user, onLogout }) {
           <button onClick={() => setShowModal(true)} className="btn-primary create-btn">
             CREATE
           </button>
+          <button onClick={() => navigate('/coach')} className="btn-secondary coach-btn">
+            STUDY COACH
+          </button>
         </div>
 
         <div className="dashboard-main">
