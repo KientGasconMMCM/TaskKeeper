@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TaskKeeper — Site Map</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #6b7b8d;
+            min-height: 100vh;
+            padding: 40px 20px 80px;
+        }
+        h1 {
+            text-align: center; color: #fff; font-size: 28px;
+            margin-bottom: 60px; text-shadow: 0 1px 3px rgba(0,0,0,.3);
+        }
+
+        /* ── Wrapper ── */
+        .wrapper {
+            position: relative;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        /* ── SVG overlay for all arrows ── */
+        #arrows {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: visible;
+        }
+
+        /* ── Rows ── */
+        .row {
+            display: flex;
+            justify-content: center;
+            gap: 60px;
+            margin-bottom: 50px;
+            position: relative;
+            z-index: 1;
+        }
+        .row.row-wide { gap: 40px; }
+
+        /* ── Page card ── */
+        .page-card {
+            background: linear-gradient(145deg, #f5f0e8, #ede8df);
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0,0,0,.25);
+            width: 280px;
+            flex-shrink: 0;
+        }
+        .page-card .card-header {
+            background: #fff;
+            border-radius: 10px 10px 0 0;
+            padding: 14px 20px;
+            border-bottom: 1px solid #d5d0c8;
+        }
+        .page-card .card-header h3 {
+            font-size: 14px; font-weight: 700; color: #222; margin: 0;
+        }
+        .page-card .card-header .file-tag {
+            font-size: 11px; color: #888; font-family: monospace;
+            margin-top: 2px;
+        }
+        .page-card .card-body {
+            padding: 16px 20px 20px;
+            display: flex; flex-direction: column; gap: 7px;
+        }
+
+        /* ── Element pill ── */
+        .el {
+            display: block;
+            background: linear-gradient(135deg, #0a7fb5, #065a82);
+            color: #fff; font-size: 12px; font-weight: 600;
+            padding: 8px 14px; border-radius: 5px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,.18);
+        }
+        .el.action {
+            background: linear-gradient(135deg, #087a3e, #065c2e);
+        }
+        .el.nav-link {
+            background: linear-gradient(135deg, #7b5ea7, #5d4585);
+        }
+        .el.auto {
+            background: linear-gradient(135deg, #b07d10, #8a6208);
+        }
+
+        /* ── Section label ── */
+        .section-label {
+            font-size: 10px; font-weight: 700;
+            text-transform: uppercase; letter-spacing: .8px;
+            color: #777; margin-top: 4px; padding-top: 6px;
+            border-top: 1px dashed #ccc;
+        }
+
+        /* ── Legend ── */
+        .legend {
+            display: flex; justify-content: center; gap: 24px;
+            margin-bottom: 40px; flex-wrap: wrap;
+        }
+        .legend-item {
+            display: flex; align-items: center; gap: 8px;
+            font-size: 12px; font-weight: 600; color: #d0d8e0;
+        }
+        .legend-swatch {
+            width: 14px; height: 14px; border-radius: 3px;
+        }
+        .swatch-input  { background: linear-gradient(135deg, #0a7fb5, #065a82); }
+        .swatch-action { background: linear-gradient(135deg, #087a3e, #065c2e); }
+        .swatch-link   { background: linear-gradient(135deg, #7b5ea7, #5d4585); }
+        .swatch-auto   { background: linear-gradient(135deg, #b07d10, #8a6208); }
+
+        /* ── Arrow labels ── */
+        .arrow-label {
+            position: absolute;
+            font-size: 10px; font-weight: 700;
+            text-transform: uppercase; letter-spacing: .5px;
+            color: #d0d8e0;
+            background: #6b7b8d;
+            padding: 1px 8px; border-radius: 3px;
+            white-space: nowrap;
+            z-index: 2;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+
+<h1>TaskKeeper &mdash; Site Map</h1>
+
+<!-- Explanation -->
+<p style="text-align:center; max-width:760px; margin:0 auto 32px; color:#d0d8e0; font-size:14px; line-height:1.7;">
+    This site map shows every page in the TaskKeeper app and how users navigate between them.
+    Each card represents one HTML page, listing its UI elements, form inputs, actions, and navigation links.
+    Arrows indicate the flow from page to page — solid lines are direct navigation, dashed lines are redirects that happen after a successful action (like logging in or resetting a password).
+    The layout reads top-to-bottom: landing page at the top, authentication pages in the middle, and the main app pages (dashboard, password recovery) below, with the task creation page at the bottom.
+</p>
+
+<!-- Legend -->
+<div class="legend">
+    <div class="legend-item"><div class="legend-swatch swatch-input"></div> Input / UI Element</div>
+    <div class="legend-item"><div class="legend-swatch swatch-action"></div> Action / API Call</div>
+    <div class="legend-item"><div class="legend-swatch swatch-link"></div> Navigation Link</div>
+    <div class="legend-item"><div class="legend-swatch swatch-auto"></div> Auto / On Success</div>
+</div>
+
+<div class="wrapper">
+    <!-- SVG overlay — arrows drawn by JS -->
+    <svg id="arrows" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+            <marker id="head" viewBox="0 0 10 10" refX="9" refY="5"
+                    markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="#3a4a5a"/>
+            </marker>
+            <marker id="head-dashed" viewBox="0 0 10 10" refX="9" refY="5"
+                    markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="#5a7a6a"/>
+            </marker>
+        </defs>
+    </svg>
+
+    <!-- ═══════════════ ROW 1: LANDING ═══════════════ -->
+    <div class="row">
+        <div class="page-card" id="landing">
+            <div class="card-header">
+                <h3>Landing Page</h3>
+                <div class="file-tag">index.html</div>
+            </div>
+            <div class="card-body">
+                <span class="el">TaskKeeper Title</span>
+                <span class="el nav-link">Sign In Button → login.html</span>
+                <span class="el nav-link">Create Account Button → register.html</span>
+                <div class="section-label">Auto</div>
+                <span class="el auto">If JWT token exists → redirect to dashboard</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════ ROW 2: LOGIN + REGISTER ═══════════════ -->
+    <div class="row">
+        <div class="page-card" id="login">
+            <div class="card-header">
+                <h3>Login Page</h3>
+                <div class="file-tag">login.html</div>
+            </div>
+            <div class="card-body">
+                <span class="el">TaskKeeper Title + Tagline</span>
+                <span class="el">Username or Email Input</span>
+                <span class="el">Password Input</span>
+                <span class="el action">Sign In Button → POST /api/auth/login</span>
+                <span class="el nav-link">Forgot Password? → forgot-password.html</span>
+                <span class="el nav-link">Sign Up Here → register.html</span>
+                <div class="section-label">On Success</div>
+                <span class="el auto">Store JWT in localStorage → redirect to dashboard</span>
+            </div>
+        </div>
+
+        <div class="page-card" id="register">
+            <div class="card-header">
+                <h3>Registration Page</h3>
+                <div class="file-tag">register.html</div>
+            </div>
+            <div class="card-body">
+                <span class="el">Create Account Title + Tagline</span>
+                <span class="el">Username Input</span>
+                <span class="el">Email Input + School Email Warning</span>
+                <span class="el">Password Input (min 8 chars)</span>
+                <span class="el">Confirm Password Input</span>
+                <span class="el action">Sign Up Button → POST /api/auth/signup</span>
+                <span class="el nav-link">Sign In Here → login.html</span>
+                <div class="section-label">On Success</div>
+                <span class="el auto">Alert "Account created!" → redirect to login</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════ ROW 3: DASHBOARD + FORGOT + RESET ═══════════════ -->
+    <div class="row row-wide">
+        <div class="page-card" id="dashboard">
+            <div class="card-header">
+                <h3>Dashboard</h3>
+                <div class="file-tag">dashboard.html</div>
+            </div>
+            <div class="card-body">
+                <span class="el">Navbar: TaskKeeper + Logout Button</span>
+                <span class="el">Welcome Header (username from JWT)</span>
+                <span class="el nav-link">+ Create Task → create-task.html</span>
+                <div class="section-label">Stats Cards</div>
+                <span class="el">Total / Pending / Overdue / Completed</span>
+                <div class="section-label">Filters</div>
+                <span class="el">Priority (All / High / Med / Low)</span>
+                <span class="el">Status (All / Pending / Completed)</span>
+                <span class="el">Category (All / Game / School / Work)</span>
+                <div class="section-label">Task List</div>
+                <span class="el">Task Items (title, desc, badges, due date)</span>
+                <span class="el">Kebab Menu ⋮ → Edit / Complete / Delete</span>
+                <span class="el">Edit Modal (name, desc, deadline, status, priority, category)</span>
+                <span class="el">Completed Tasks Toggle Section</span>
+                <div class="section-label">Auth Guard</div>
+                <span class="el auto">No token → redirect to login</span>
+            </div>
+        </div>
+
+        <div class="page-card" id="forgot">
+            <div class="card-header">
+                <h3>Forgot Password</h3>
+                <div class="file-tag">forgot-password.html</div>
+            </div>
+            <div class="card-body">
+                <span class="el">Reset Password Title + Subtitle</span>
+                <span class="el">Email Address Input</span>
+                <span class="el action">Send Reset Link → POST /api/auth/forgot-password</span>
+                <span class="el nav-link">Sign In Here → login.html</span>
+                <div class="section-label">On Success</div>
+                <span class="el auto">Email sent → link to reset-password?token=...</span>
+            </div>
+        </div>
+
+        <div class="page-card" id="reset">
+            <div class="card-header">
+                <h3>Reset Password</h3>
+                <div class="file-tag">reset-password.html</div>
+            </div>
+            <div class="card-body">
+                <span class="el">Reset Password Title + Subtitle</span>
+                <span class="el auto">Token Verification (loading state)</span>
+                <span class="el">New Password Input (min 6 chars)</span>
+                <span class="el">Confirm Password Input</span>
+                <span class="el action">Reset Password → POST /api/auth/reset-password</span>
+                <span class="el nav-link">Back to Sign In → login.html</span>
+                <div class="section-label">On Success</div>
+                <span class="el auto">Alert "Password reset!" → redirect to login</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════ ROW 4: CREATE TASK ═══════════════ -->
+    <div class="row">
+        <div class="page-card" id="creation">
+            <div class="card-header">
+                <h3>Create Task</h3>
+                <div class="file-tag">create-task.html</div>
+            </div>
+            <div class="card-body">
+                <span class="el nav-link">Navbar: Dashboard Link + Logout</span>
+                <span class="el">Task Title Input (required)</span>
+                <span class="el">Description Textarea</span>
+                <span class="el">Due Date Input (required)</span>
+                <span class="el">Priority Dropdown (High / Med / Low)</span>
+                <span class="el">Category Dropdown (Game / School / Work)</span>
+                <span class="el action">Create Task Button → opens Confirmation Modal</span>
+                <span class="el nav-link">Cancel → back to dashboard</span>
+                <div class="section-label">Confirmation Modal</div>
+                <span class="el">Review all entered details</span>
+                <span class="el action">Confirm → POST /api/tasks → redirect to dashboard</span>
+                <span class="el nav-link">Go Back → close modal</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+window.addEventListener('load', function () {
+    var svg = document.getElementById('arrows');
+    var wrapper = document.querySelector('.wrapper');
+    var wr = wrapper.getBoundingClientRect();
+
+    // Set SVG viewBox to match wrapper size
+    svg.setAttribute('viewBox', '0 0 ' + wr.width + ' ' + wr.height);
+    svg.style.width = wr.width + 'px';
+    svg.style.height = wr.height + 'px';
+
+    // Helper: get card edges relative to wrapper
+    function pos(id) {
+        var el = document.getElementById(id);
+        var r = el.getBoundingClientRect();
+        return {
+            cx: r.left + r.width / 2 - wr.left,
+            top: r.top - wr.top,
+            bottom: r.bottom - wr.top,
+            left: r.left - wr.left,
+            right: r.right - wr.left,
+            midY: r.top + r.height / 2 - wr.top
+        };
+    }
+
+    // Draw a curved arrow (vertical: bottom-center → top-center)
+    function drawArrow(fromId, toId, opts) {
+        opts = opts || {};
+        var f = pos(fromId);
+        var t = pos(toId);
+        var x1, y1, x2, y2;
+
+        if (opts.side === 'right-to-left') {
+            // Horizontal: right edge → left edge
+            x1 = f.right + 2; y1 = f.midY;
+            x2 = t.left - 2;  y2 = t.midY;
+            var mx = (x1 + x2) / 2;
+            var d = 'M ' + x1 + ' ' + y1 + ' C ' + mx + ' ' + y1 + ', ' + mx + ' ' + y2 + ', ' + x2 + ' ' + y2;
+        } else if (opts.side === 'left-to-right') {
+            x1 = f.right + 2; y1 = f.midY;
+            x2 = t.left - 2;  y2 = t.midY;
+            var mx = (x1 + x2) / 2;
+            var d = 'M ' + x1 + ' ' + y1 + ' C ' + mx + ' ' + y1 + ', ' + mx + ' ' + y2 + ', ' + x2 + ' ' + y2;
+        } else {
+            // Vertical: bottom-center → top-center (with optional x offset)
+            x1 = f.cx + (opts.fromOff || 0);
+            y1 = f.bottom + 2;
+            x2 = t.cx + (opts.toOff || 0);
+            y2 = t.top - 2;
+            var my = y1 + (y2 - y1) * 0.45;
+            var d = 'M ' + x1 + ' ' + y1 + ' C ' + x1 + ' ' + my + ', ' + x2 + ' ' + my + ', ' + x2 + ' ' + y2;
+        }
+
+        var path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        path.setAttribute('d', d);
+        path.setAttribute('stroke', opts.color || '#3a4a5a');
+        path.setAttribute('stroke-width', opts.width || '2.5');
+        path.setAttribute('fill', 'none');
+        path.setAttribute('marker-end', 'url(#head)');
+        if (opts.dash) {
+            path.setAttribute('stroke-dasharray', '6 4');
+            path.setAttribute('marker-end', 'url(#head-dashed)');
+            path.setAttribute('stroke', '#5a7a6a');
+        }
+        svg.appendChild(path);
+
+        // Optional label at midpoint
+        if (opts.label) {
+            var lbl = document.createElement('div');
+            lbl.className = 'arrow-label';
+            lbl.textContent = opts.label;
+            // Position at curve midpoint
+            var lx = (x1 + x2) / 2;
+            var ly = (y1 + y2) / 2;
+            lbl.style.left = lx + 'px';
+            lbl.style.top = ly + 'px';
+            lbl.style.transform = 'translate(-50%, -50%)';
+            wrapper.appendChild(lbl);
+        }
+    }
+
+    // ── Draw all connections ──
+
+    // Landing → Login (Sign In button)
+    drawArrow('landing', 'login', { fromOff: -40, label: 'Sign In' });
+
+    // Landing → Register (Create Account button)
+    drawArrow('landing', 'register', { fromOff: 40, label: 'Create Account' });
+
+    // Login → Dashboard (on success)
+    drawArrow('login', 'dashboard', { fromOff: -40, label: 'Login Success' });
+
+    // Login → Forgot Password
+    drawArrow('login', 'forgot', { fromOff: 40, label: 'Forgot Password' });
+
+    // Login ↔ Register (bidirectional, horizontal)
+    drawArrow('login', 'register', { side: 'left-to-right', dash: true, label: 'Sign Up / Sign In' });
+
+    // Forgot Password → Reset Password (horizontal, via email)
+    drawArrow('forgot', 'reset', { side: 'right-to-left', label: 'Email Link' });
+
+    // Reset Password → Login (on success, curves back up)
+    // Draw from reset bottom, curve wide left, arrive at login bottom
+    (function () {
+        var f = pos('reset');
+        var t = pos('login');
+        var x1 = f.right + 2, y1 = f.midY + 40;
+        var x2 = t.right + 2, y2 = t.midY + 40;
+        var bulge = 60;
+        var d = 'M ' + x1 + ' ' + y1 +
+                ' C ' + (x1 + bulge) + ' ' + y1 +
+                ', ' + (x2 + bulge) + ' ' + y2 +
+                ', ' + x2 + ' ' + y2;
+        var path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        path.setAttribute('d', d);
+        path.setAttribute('stroke', '#5a7a6a');
+        path.setAttribute('stroke-width', '2');
+        path.setAttribute('fill', 'none');
+        path.setAttribute('stroke-dasharray', '6 4');
+        path.setAttribute('marker-end', 'url(#head-dashed)');
+        svg.appendChild(path);
+
+        var lbl = document.createElement('div');
+        lbl.className = 'arrow-label';
+        lbl.textContent = 'Password Reset Success';
+        lbl.style.left = ((x1 + x2) / 2 + bulge) + 'px';
+        lbl.style.top = ((y1 + y2) / 2) + 'px';
+        lbl.style.transform = 'translate(-50%, -50%)';
+        wrapper.appendChild(lbl);
+    })();
+
+    // Dashboard → Create Task
+    drawArrow('dashboard', 'creation', { label: '+ Create Task' });
+});
+</script>
+
+</body>
+</html>

@@ -70,6 +70,21 @@ const initDatabase = async () => {
     await sql(`ALTER TABLE users ADD COLUMN IF NOT EXISTS reset_token_expires TIMESTAMP`);
   } catch(e) {}
 
+  // Create assignments table for school assignments
+  await sql(`CREATE TABLE IF NOT EXISTS assignments (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER NOT NULL REFERENCES users(id),
+    course TEXT NOT NULL,
+    assignment_title TEXT NOT NULL,
+    due_date TIMESTAMP,
+    subject TEXT,
+    priority TEXT DEFAULT 'medium',
+    submission_status TEXT DEFAULT 'pending',
+    description TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  )`);
+
   console.log('Database initialized successfully');
 };
 

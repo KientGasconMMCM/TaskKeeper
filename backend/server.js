@@ -5,7 +5,9 @@ require('dotenv').config();
 const { initDatabase } = require('./models/db');
 const authRoutes = require('./routes/auth');
 const taskRoutes = require('./routes/tasks');
+const assignmentRoutes = require('./routes/assignments');
 const Task = require('./models/Task');
+const Assignment = require('./models/Assignment');
 const { sendDeadlineReminderEmail } = require('./utils/email');
 
 const app = express();
@@ -17,6 +19,7 @@ app.use(express.json());
 // API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/tasks', taskRoutes);
+app.use('/api/assignments', assignmentRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {
