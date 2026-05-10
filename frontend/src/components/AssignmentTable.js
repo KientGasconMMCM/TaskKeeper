@@ -16,11 +16,21 @@ function AssignmentTable({ assignments, onDelete }) {
     switch (status) {
       case 'submitted':
         return 'status-submitted';
-      case 'graded':
-        return 'status-graded';
-      case 'pending':
+      case 'not_submitted':
+        return 'status-pending';
       default:
         return 'status-pending';
+    }
+  };
+
+  const getStatusDisplayText = (status) => {
+    switch (status) {
+      case 'not_submitted':
+        return 'Not Submitted';
+      case 'submitted':
+        return 'Submitted';
+      default:
+        return status;
     }
   };
 
@@ -69,7 +79,7 @@ function AssignmentTable({ assignments, onDelete }) {
                 </td>
                 <td>
                   <span className={`badge ${getStatusBadgeClass(assignment.submission_status)}`}>
-                    {assignment.submission_status}
+                    {getStatusDisplayText(assignment.submission_status)}
                   </span>
                 </td>
                 <td>

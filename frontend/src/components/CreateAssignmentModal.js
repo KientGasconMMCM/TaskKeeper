@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import './CreateTaskModal.css';
+import { calculatePriorityWithGemini } from '../utils/geminiPriority';
 
 function CreateAssignmentModal({ onClose, onCreate }) {
   const [formData, setFormData] = useState({
@@ -7,12 +8,13 @@ function CreateAssignmentModal({ onClose, onCreate }) {
     assignmentTitle: '',
     dueDate: '',
     subject: '',
-    priority: 'medium',
-    submissionStatus: 'pending',
+    priority: null,
+    submissionStatus: 'not_submitted',
     description: '',
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [calculatedPriority, setCalculatedPriority] = useState(null);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -34,16 +36,26 @@ function CreateAssignmentModal({ onClose, onCreate }) {
     setLoading(true);
 
     try {
-      await onCreate(formData);
+      // Calculate priority using Gemini
+      const priority = await calculatePriorityWithGemini(formData);
+      setCalculatedPriority(priority);
+      
+      const dataToSubmit = {
+        ...formData,
+        priority: priority,
+      };
+      
+      await onCreate(dataToSubmit);
       setFormData({
         course: '',
         assignmentTitle: '',
         dueDate: '',
         subject: '',
-        priority: 'medium',
-        submissionStatus: 'pending',
+        priority: null,
+        submissionStatus: 'not_submitted',
         description: '',
       });
+      setCalculatedPriority(null);
     } catch (err) {
       setError('Error creating assignment');
     } finally {
@@ -111,19 +123,21 @@ function CreateAssignmentModal({ onClose, onCreate }) {
               />
             </div>
 
-            <div className="form-group">
-              <label htmlFor="priority">Priority</label>
-              <select
-                id="priority"
-                name="priority"
-                value={formData.priority}
-                onChange={handleChange}
-              >
-                <option value="low">Low</option>
-                <option value="medium">Medium</option>
-                <option value="high">High</option>
-              </select>
-            </div>
+            {calculatedPriority && (
+              <div className="form-group">
+                <label>Auto-Assigned Priority</label>
+                <div style={{
+                  padding: '10px',
+                  backgroundColor: calculatedPriority === 'high' ? '#fee2e2' : calculatedPriority === 'medium' ? '#fef3c7' : '#dcfce7',
+                  color: calculatedPriority === 'high' ? '#991b1b' : calculatedPriority === 'medium' ? '#92400e' : '#166534',
+                  borderRadius: '4px',
+                  textTransform: 'capitalize',
+                  fontWeight: 'bold'
+                }}>
+                  {calculatedPriority}
+                </div>
+              </div>
+            )}
 
             <div className="form-group">
               <label htmlFor="submissionStatus">Status</label>
@@ -133,9 +147,8 @@ function CreateAssignmentModal({ onClose, onCreate }) {
                 value={formData.submissionStatus}
                 onChange={handleChange}
               >
-                <option value="pending">Pending</option>
+                <option value="not_submitted">Not Submitted</option>
                 <option value="submitted">Submitted</option>
-                <option value="graded">Graded</option>
               </select>
             </div>
 

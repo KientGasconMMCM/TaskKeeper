@@ -10,7 +10,7 @@ const Assignment = {
     
     const rows = await sql(
       'INSERT INTO assignments (user_id, course, assignment_title, due_date, subject, priority, description, submission_status) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *',
-      [userId, course, assignmentTitle, dd, s, p, desc, 'pending']
+      [userId, course, assignmentTitle, dd, s, p, desc, 'not_submitted']
     );
     
     return rows[0];
@@ -39,7 +39,7 @@ const Assignment = {
     const s = subject || null;
     const dd = dueDate || null;
     const desc = description || null;
-    const ss = submissionStatus || 'pending';
+    const ss = submissionStatus || 'not_submitted';
     
     await sql(
       'UPDATE assignments SET course = $1, assignment_title = $2, due_date = $3, subject = $4, priority = $5, submission_status = $6, description = $7, updated_at = CURRENT_TIMESTAMP WHERE id = $8',
