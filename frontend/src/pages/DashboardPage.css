@@ -94,9 +94,13 @@
 
 .dashboard-main-layout {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr) 360px;
   gap: 24px;
   align-items: start;
+}
+
+.dashboard-main-layout:has(.chat-toggle-button-container) {
+  grid-template-columns: minmax(0, 1fr) 56px;
 }
 
 .assignments-section {
