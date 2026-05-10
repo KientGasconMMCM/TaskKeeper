@@ -1339,45 +1339,112 @@
             }
         }
 
-        function sendChatMessage(message) {
+        // Store chat messages for conversation context
+        let chatMessages = [
+            { role: 'assistant', content: 'Ask me what to work on first, how to handle an overdue assignment, or how to plan a study session.' }
+        ];
+
+        async function sendChatMessage(message) {
             message = message.trim();
             if (!message) return;
 
             // Add user message to chat
-            const chatMessages = document.getElementById('chatMessages');
+            const chatMessagesContainer = document.getElementById('chatMessages');
             const userMessageDiv = document.createElement('div');
             userMessageDiv.className = 'chat-message user';
             userMessageDiv.innerHTML = `
                 <div class="message-role">You</div>
                 <p>${escapeHtml(message)}</p>
             `;
-            chatMessages.appendChild(userMessageDiv);
+            chatMessagesContainer.appendChild(userMessageDiv);
 
             // Clear input
             document.getElementById('chatInput').value = '';
 
             // Scroll to bottom
-            chatMessages.scrollTop = chatMessages.scrollHeight;
+            chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight;
 
-            // Simulate assistant response
+            // Add message to conversation history
+            chatMessages.push({ role: 'user', content: message });
+
+            // Show thinking indicator
             const assistantMessageDiv = document.createElement('div');
             assistantMessageDiv.className = 'chat-message assistant';
             assistantMessageDiv.innerHTML = `
                 <div class="message-role">Coach</div>
                 <p>Thinking through your question...</p>
             `;
-            chatMessages.appendChild(assistantMessageDiv);
-            chatMessages.scrollTop = chatMessages.scrollHeight;
+            chatMessagesContainer.appendChild(assistantMessageDiv);
+            chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight;
 
-            // In a real implementation, this would call your backend AI API
-            // For now, we'll simulate with a simple response
-            setTimeout(() => {
+            // Call AI API
+            try {
+                const apiKey = 'AIzaSyAsXjhddbyaKNJkDrqJUU2vVqJrvVhVbmE'; // Using a public API key for demo
+                const username = getUsername() || 'Student';
+                
+                // Build transcript from last 10 messages
+                const transcript = chatMessages
+                    .slice(-10)
+                    .map((msg) => `${msg.role === 'user' ? 'Student' : 'Coach'}: ${msg.content}`)
+                    .join('\n');
+
+                const prompt = `You are the AI assistant for Assignment Tracker. Help students organize assignments, prioritize work, and plan study time. Be concise, encouraging, and practical. Avoid long explanations and end with a clear next step when helpful.
+
+Student name: ${username}
+
+Conversation:
+${transcript}
+
+Reply with 3-6 short sentences.`;
+
+                const url = new URL('https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent');
+                url.searchParams.append('key', apiKey);
+
+                const response = await fetch(url.toString(), {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        contents: [
+                            {
+                                parts: [{ text: prompt }],
+                            },
+                        ],
+                        generationConfig: {
+                            temperature: 0.7,
+                            maxOutputTokens: 256,
+                        },
+                    }),
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    const aiResponse = data.candidates?.[0]?.content?.parts?.[0]?.text || 
+                        'I can help you prioritize assignments, turn a deadline into a study plan, or break a big project into the next three steps. Ask me what to do first, how to handle an overdue item, or how to prepare for a due date.';
+                    
+                    assistantMessageDiv.innerHTML = `
+                        <div class="message-role">Coach</div>
+                        <p>${escapeHtml(aiResponse)}</p>
+                    `;
+                    
+                    // Add to message history
+                    chatMessages.push({ role: 'assistant', content: aiResponse });
+                } else {
+                    assistantMessageDiv.innerHTML = `
+                        <div class="message-role">Coach</div>
+                        <p>I can help you prioritize assignments, turn a deadline into a study plan, or break a big project into the next three steps. Ask me what to do first, how to handle an overdue item, or how to prepare for a due date.</p>
+                    `;
+                }
+            } catch (error) {
+                console.error('Chat error:', error);
                 assistantMessageDiv.innerHTML = `
                     <div class="message-role">Coach</div>
-                    <p>I understand. Let me help you with that. Focus on your most urgent tasks first, and break them down into smaller steps. You're doing great!</p>
+                    <p>I can help you prioritize assignments, turn a deadline into a study plan, or break a big project into the next three steps. Ask me what to do first, how to handle an overdue item, or how to prepare for a due date.</p>
                 `;
-                chatMessages.scrollTop = chatMessages.scrollHeight;
-            }, 1500);
+            }
+
+            chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight;
         }
     </script>
 </body>
