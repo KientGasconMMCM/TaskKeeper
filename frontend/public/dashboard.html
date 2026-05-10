@@ -586,6 +586,225 @@
                 gap: 10px;
                 align-items: flex-start;
             }
+
+            .main-wrapper {
+                flex-direction: column;
+            }
+
+            .chat-box-wrapper {
+                width: 100%;
+                margin-top: 20px;
+                position: static;
+            }
+
+            .chat-box {
+                position: static;
+            }
+        }
+
+        /* Chat Box Styles */
+        .main-wrapper {
+            display: flex;
+            gap: 24px;
+            align-items: flex-start;
+        }
+
+        .main-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .chat-box-wrapper {
+            width: 360px;
+            position: sticky;
+            top: 30px;
+        }
+
+        .chat-box {
+            background: rgba(10, 18, 30, 0.78);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            box-shadow: 0 18px 50px rgba(0, 0, 0, 0.25);
+        }
+
+        .chat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 16px;
+        }
+
+        .chat-label {
+            margin: 0 0 4px;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1.4px;
+            color: #7fd0ff;
+        }
+
+        .chat-header h3 {
+            margin: 0;
+            font-size: 20px;
+            color: #fff;
+        }
+
+        .chat-close-btn {
+            background: transparent;
+            border: none;
+            color: #9fb6c9;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 0;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: color 0.2s ease;
+            flex-shrink: 0;
+        }
+
+        .chat-close-btn:hover {
+            color: #d8e7f4;
+        }
+
+        .chat-messages {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-height: 360px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+
+        .chat-message {
+            border-radius: 16px;
+            padding: 14px 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .chat-message.user {
+            background: rgba(8, 150, 238, 0.12);
+            border-color: rgba(8, 150, 238, 0.22);
+            margin-left: 18px;
+        }
+
+        .chat-message.assistant {
+            margin-right: 18px;
+        }
+
+        .message-role {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 6px;
+            color: #9fb6c9;
+        }
+
+        .chat-message p {
+            margin: 0;
+            color: #e6eef6;
+            font-size: 14px;
+            line-height: 1.55;
+        }
+
+        .chat-quick-prompts {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .chat-quick-prompts button {
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.04);
+            color: #d8e7f4;
+            border-radius: 999px;
+            padding: 8px 12px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: left;
+        }
+
+        .chat-quick-prompts button:hover {
+            background: rgba(8, 150, 238, 0.16);
+            border-color: rgba(8, 150, 238, 0.3);
+        }
+
+        .chat-input-box {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .chat-input-box textarea {
+            width: 100%;
+            resize: vertical;
+            min-height: 96px;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(8, 12, 18, 0.6);
+            color: #fff;
+            padding: 14px 16px;
+            font-size: 14px;
+            line-height: 1.5;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .chat-input-box textarea:focus {
+            outline: none;
+            border-color: rgba(8, 150, 238, 0.45);
+            box-shadow: 0 0 0 3px rgba(8, 150, 238, 0.12);
+        }
+
+        .chat-send-btn {
+            align-self: flex-end;
+            border: none;
+            border-radius: 999px;
+            padding: 11px 18px;
+            background: linear-gradient(135deg, #0896ee, #0aabff);
+            color: #fff;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .chat-send-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 22px rgba(8, 150, 238, 0.28);
+        }
+
+        .chat-toggle-btn {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            border: 2px solid rgba(8, 150, 238, 0.4);
+            background: linear-gradient(135deg, rgba(8, 150, 238, 0.2), rgba(10, 171, 255, 0.2));
+            color: #7fd0ff;
+            font-size: 28px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(8, 150, 238, 0.15);
+        }
+
+        .chat-toggle-btn:hover {
+            transform: scale(1.1);
+            border-color: rgba(8, 150, 238, 0.6);
+            background: linear-gradient(135deg, rgba(8, 150, 238, 0.3), rgba(10, 171, 255, 0.3));
+            box-shadow: 0 6px 20px rgba(8, 150, 238, 0.25);
+        }
+
+        .chat-toggle-btn:active {
+            transform: scale(0.95);
         }
     </style>
 </head>
@@ -598,68 +817,106 @@
     </div>
 
     <div class="container">
-        <div class="header">
-            <div>
-                <h2 id="welcomeHeader">Welcome</h2>
-                <p style="color: #888; font-size: 13px; margin-top: 4px;">Track your assignments, prioritize what matters, and hit every deadline.</p>
-            </div>
-            <a href="create-task.html" class="create-btn">+ Create Task</a>
-        </div>
+        <div class="main-wrapper">
+            <div class="main-content">
+                <div class="header">
+                    <div>
+                        <h2 id="welcomeHeader">Welcome</h2>
+                        <p style="color: #888; font-size: 13px; margin-top: 4px;">Track your assignments, prioritize what matters, and hit every deadline.</p>
+                    </div>
+                    <a href="create-task.html" class="create-btn">+ Create Task</a>
+                </div>
 
-        <div id="alert" class="alert"></div>
+                <div id="alert" class="alert"></div>
 
-        <div class="task-stats" id="taskStats" style="display:none;">
-            <div class="stat-card stat-total">
-                <span class="stat-number" id="statTotal">0</span>
-                <span class="stat-label">Total Tasks</span>
-            </div>
-            <div class="stat-card stat-pending">
-                <span class="stat-number" id="statPending">0</span>
-                <span class="stat-label">Not Submitted</span>
-            </div>
-            <div class="stat-card stat-overdue">
-                <span class="stat-number" id="statOverdue">0</span>
-                <span class="stat-label">Overdue</span>
-            </div>
-            <div class="stat-card stat-completed">
-                <span class="stat-number" id="statDone">0</span>
-                <span class="stat-label">Submitted</span>
-            </div>
-        </div>
+                <div class="task-stats" id="taskStats" style="display:none;">
+                    <div class="stat-card stat-total">
+                        <span class="stat-number" id="statTotal">0</span>
+                        <span class="stat-label">Total Tasks</span>
+                    </div>
+                    <div class="stat-card stat-pending">
+                        <span class="stat-number" id="statPending">0</span>
+                        <span class="stat-label">Not Submitted</span>
+                    </div>
+                    <div class="stat-card stat-overdue">
+                        <span class="stat-number" id="statOverdue">0</span>
+                        <span class="stat-label">Overdue</span>
+                    </div>
+                    <div class="stat-card stat-completed">
+                        <span class="stat-number" id="statDone">0</span>
+                        <span class="stat-label">Submitted</span>
+                    </div>
+                </div>
 
-        <div class="filters">
-            <div class="filters-heading">🔍 Filter your assignments</div>
-            <div class="filter-group">
-                <label for="priorityFilter">Priority:</label>
-                <select id="priorityFilter" onchange="filterTasks()">
-                    <option value="">All</option>
-                    <option value="high">High</option>
-                    <option value="medium">Medium</option>
-                    <option value="low">Low</option>
-                </select>
-            </div>
-            <div class="filter-group">
-                <label for="statusFilter">Status:</label>
-                <select id="statusFilter" onchange="filterTasks()">
-                    <option value="">All</option>
-                    <option value="not_submitted">Not Submitted</option>
-                    <option value="submitted">Submitted</option>
-                </select>
-            </div>
-        </div>
+                <div class="filters">
+                    <div class="filters-heading">🔍 Filter your assignments</div>
+                    <div class="filter-group">
+                        <label for="priorityFilter">Priority:</label>
+                        <select id="priorityFilter" onchange="filterTasks()">
+                            <option value="">All</option>
+                            <option value="high">High</option>
+                            <option value="medium">Medium</option>
+                            <option value="low">Low</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="statusFilter">Status:</label>
+                        <select id="statusFilter" onchange="filterTasks()">
+                            <option value="">All</option>
+                            <option value="not_submitted">Not Submitted</option>
+                            <option value="submitted">Submitted</option>
+                        </select>
+                    </div>
+                </div>
 
-        <div id="tasksContainer" class="tasks-container">
-            <div class="empty-state">
-                <h3>Loading assignments...</h3>
-            </div>
-        </div>
+                <div id="tasksContainer" class="tasks-container">
+                    <div class="empty-state">
+                        <h3>Loading assignments...</h3>
+                    </div>
+                </div>
 
-        <button class="completed-toggle-btn" id="completedToggleBtn" onclick="toggleCompletedSection()" style="display:none;">
-            <span>✅ Submitted Assignments (<span id="completedCount">0</span>)</span>
-            <span class="toggle-arrow">▼</span>
-        </button>
-        <div class="completed-section" id="completedSection">
-            <div id="completedTasksContainer" class="tasks-container"></div>
+                <button class="completed-toggle-btn" id="completedToggleBtn" onclick="toggleCompletedSection()" style="display:none;">
+                    <span>✅ Submitted Assignments (<span id="completedCount">0</span>)</span>
+                    <span class="toggle-arrow">▼</span>
+                </button>
+                <div class="completed-section" id="completedSection">
+                    <div id="completedTasksContainer" class="tasks-container"></div>
+                </div>
+            </div>
+
+            <!-- Study Coach Chat Box -->
+            <div id="chatBoxWrapper" class="chat-box-wrapper">
+                <div id="chatBox" class="chat-box">
+                    <div class="chat-header">
+                        <div>
+                            <p class="chat-label">AI Chat Box</p>
+                            <h3>Study Coach</h3>
+                        </div>
+                        <button class="chat-close-btn" onclick="toggleChatBox()" title="Minimize Chat">−</button>
+                    </div>
+                    
+                    <div class="chat-messages" id="chatMessages">
+                        <div class="chat-message assistant">
+                            <div class="message-role">Coach</div>
+                            <p>Ask me what to work on first, how to handle an overdue assignment, or how to plan a study session.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="chat-quick-prompts">
+                        <button onclick="sendChatMessage('What should I do first today?')">What should I do first today?</button>
+                        <button onclick="sendChatMessage('How do I catch up on overdue work?')">How do I catch up on overdue work?</button>
+                        <button onclick="sendChatMessage('Make me a short study plan for tonight.')">Make me a short study plan for tonight.</button>
+                    </div>
+                    
+                    <div class="chat-input-box">
+                        <textarea id="chatInput" placeholder="Ask the AI about priorities, deadlines, or study planning..." rows="4" onkeydown="handleChatKeydown(event)"></textarea>
+                        <button class="chat-send-btn" onclick="sendChatMessage(document.getElementById('chatInput').value)">Send</button>
+                    </div>
+                </div>
+                
+                <!-- Toggle button when chat is minimized -->
+                <button id="chatToggleBtn" class="chat-toggle-btn" onclick="toggleChatBox()" style="display: none;" title="Open Study Coach Chat">💬</button>
+            </div>
         </div>
     </div>
 
@@ -1060,6 +1317,67 @@
         function logout() {
             localStorage.removeItem('token');
             window.location.href = 'login.html';
+        }
+
+        function toggleChatBox() {
+            const chatBox = document.getElementById('chatBox');
+            const toggleBtn = document.getElementById('chatToggleBtn');
+            
+            if (chatBox.style.display === 'none') {
+                chatBox.style.display = 'flex';
+                toggleBtn.style.display = 'none';
+            } else {
+                chatBox.style.display = 'none';
+                toggleBtn.style.display = 'flex';
+            }
+        }
+
+        function handleChatKeydown(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                sendChatMessage(document.getElementById('chatInput').value);
+            }
+        }
+
+        function sendChatMessage(message) {
+            message = message.trim();
+            if (!message) return;
+
+            // Add user message to chat
+            const chatMessages = document.getElementById('chatMessages');
+            const userMessageDiv = document.createElement('div');
+            userMessageDiv.className = 'chat-message user';
+            userMessageDiv.innerHTML = `
+                <div class="message-role">You</div>
+                <p>${escapeHtml(message)}</p>
+            `;
+            chatMessages.appendChild(userMessageDiv);
+
+            // Clear input
+            document.getElementById('chatInput').value = '';
+
+            // Scroll to bottom
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            // Simulate assistant response
+            const assistantMessageDiv = document.createElement('div');
+            assistantMessageDiv.className = 'chat-message assistant';
+            assistantMessageDiv.innerHTML = `
+                <div class="message-role">Coach</div>
+                <p>Thinking through your question...</p>
+            `;
+            chatMessages.appendChild(assistantMessageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            // In a real implementation, this would call your backend AI API
+            // For now, we'll simulate with a simple response
+            setTimeout(() => {
+                assistantMessageDiv.innerHTML = `
+                    <div class="message-role">Coach</div>
+                    <p>I understand. Let me help you with that. Focus on your most urgent tasks first, and break them down into smaller steps. You're doing great!</p>
+                `;
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }, 1500);
         }
     </script>
 </body>
