@@ -1,83 +1,57 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import AssignmentTable from '../components/AssignmentTable';
-import CreateAssignmentModal from '../components/CreateAssignmentModal';
-import { sendDashboardAssistantMessage } from '../utils/dashboardAssistant';
+import TaskTable from '../components/TaskTable';
+import CreateTaskModal from '../components/CreateTaskModal';
 import './DashboardPage.css';
 
-const INITIAL_ASSISTANT_MESSAGES = [
-  {
-    id: 'assistant-welcome',
-    role: 'assistant',
-    content: 'Ask me what to work on first, how to handle an overdue assignment, or how to plan a study session.',
-  },
-];
-
-const QUICK_PROMPTS = [
-  'What should I do first today?',
-  'How do I catch up on overdue work?',
-  'Make me a short study plan for tonight.',
-];
-
 function DashboardPage({ user, onLogout }) {
-  const [assignments, setAssignments] = useState([]);
+  const [tasks, setTasks] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [assistantMessages, setAssistantMessages] = useState(INITIAL_ASSISTANT_MESSAGES);
-  const [assistantInput, setAssistantInput] = useState('');
-  const [assistantLoading, setAssistantLoading] = useState(false);
-  const [chatOpen, setChatOpen] = useState(true);
   const navigate = useNavigate();
-  const assistantScrollRef = useRef(null);
   const token = localStorage.getItem('token');
 
-  const fetchAssignments = async () => {
+  const fetchTasks = async () => {
     try {
       setLoading(true);
-      const response = await axios.get('/api/assignments', {
+      const response = await axios.get('/api/tasks', {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setAssignments(response.data.assignments || []);
+      setTasks(response.data.tasks || []);
     } catch (err) {
-      setError('Error fetching assignments');
+      setError('Error fetching tasks');
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchAssignments();
+    fetchTasks();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  useEffect(() => {
-    if (assistantScrollRef.current) {
-      assistantScrollRef.current.scrollTop = assistantScrollRef.current.scrollHeight;
-    }
-  }, [assistantMessages]);
-
-  const handleCreateAssignment = async (assignmentData) => {
+  const handleCreateTask = async (taskData) => {
     try {
-      const response = await axios.post('/api/assignments', assignmentData, {
+      const response = await axios.post('/api/tasks', taskData, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setAssignments([...assignments, response.data.assignment]);
+      setTasks([...tasks, response.data.task]);
       setShowModal(false);
     } catch (err) {
-      setError('Error creating assignment');
+      setError('Error creating task');
     }
   };
 
-  const handleDeleteAssignment = async (assignmentId) => {
+  const handleDeleteTask = async (taskId) => {
     try {
-      await axios.delete(`/api/assignments/${assignmentId}`, {
+      await axios.delete(`/api/tasks/${taskId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setAssignments(assignments.filter((assignment) => assignment.id !== assignmentId));
+      setTasks(tasks.filter((task) => task.id !== taskId));
     } catch (err) {
-      setError('Error deleting assignment');
+      setError('Error deleting task');
     }
   };
 
@@ -86,49 +60,11 @@ function DashboardPage({ user, onLogout }) {
     navigate('/');
   };
 
-  const handleAssistantSend = async (overrideMessage) => {
-    const nextMessage = (overrideMessage ?? assistantInput).trim();
-
-    if (!nextMessage || assistantLoading) {
-      return;
-    }
-
-    const userMessage = {
-      id: `${Date.now()}-user`,
-      role: 'user',
-      content: nextMessage,
-    };
-
-    const conversation = [...assistantMessages, userMessage];
-
-    setAssistantMessages(conversation);
-    setAssistantInput('');
-    setAssistantLoading(true);
-
-    try {
-      const result = await sendDashboardAssistantMessage({
-        messages: conversation,
-        userName: user?.username || 'Student',
-      });
-
-      setAssistantMessages((currentMessages) => [
-        ...currentMessages,
-        {
-          id: `${Date.now()}-assistant`,
-          role: 'assistant',
-          content: result.content,
-        },
-      ]);
-    } finally {
-      setAssistantLoading(false);
-    }
-  };
-
   return (
     <div className="dashboard-container">
       <header className="dashboard-header">
         <div className="header-content">
-          <h1>Welcome, {user?.username || 'Student'}</h1>
+          <h1>Welcome User,</h1>
           <button onClick={handleLogout} className="btn-secondary">
             Logout
           </button>
@@ -141,106 +77,27 @@ function DashboardPage({ user, onLogout }) {
           <button onClick={() => setShowModal(true)} className="btn-primary create-btn">
             CREATE
           </button>
-          <button onClick={() => navigate('/coach')} className="btn-secondary coach-btn">
-            STUDY COACH
-          </button>
         </div>
 
         <div className="dashboard-main">
-          <div className="dashboard-main-layout">
-            <div className="assignments-section">
-              {error && <div className="alert alert-error">{error}</div>}
+          <div className="assignments-section">
+            {error && <div className="alert alert-error">{error}</div>}
 
-              {loading ? (
-                <div className="loading">
-                  <div className="spinner"></div>
-                </div>
-              ) : (
-                <AssignmentTable assignments={assignments} onDelete={handleDeleteAssignment} />
-              )}
-            </div>
-
-            {chatOpen && <aside className="assistant-card">
-              <div className="assistant-card-header">
-                <div>
-                  <p className="assistant-eyebrow">AI chat box</p>
-                  <h2>Assignment Coach</h2>
-                </div>
-                <button
-                  className="assistant-close-btn"
-                  onClick={() => setChatOpen(false)}
-                  title="Minimize Chat"
-                >
-                  −
-                </button>
+            {loading ? (
+              <div className="loading">
+                <div className="spinner"></div>
               </div>
-
-              <div className="assistant-messages" ref={assistantScrollRef}>
-                {assistantMessages.map((message) => (
-                  <div key={message.id} className={`assistant-message ${message.role}`}>
-                    <div className="assistant-message-role">{message.role === 'user' ? 'You' : 'Coach'}</div>
-                    <p>{message.content}</p>
-                  </div>
-                ))}
-                {assistantLoading && (
-                  <div className="assistant-message assistant">
-                    <div className="assistant-message-role">Coach</div>
-                    <p>Thinking through the next step...</p>
-                  </div>
-                )}
-              </div>
-
-              <div className="assistant-quick-prompts">
-                {QUICK_PROMPTS.map((prompt) => (
-                  <button key={prompt} type="button" onClick={() => handleAssistantSend(prompt)}>
-                    {prompt}
-                  </button>
-                ))}
-              </div>
-
-              <div className="assistant-input-box">
-                <textarea
-                  value={assistantInput}
-                  onChange={(e) => setAssistantInput(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' && !e.shiftKey) {
-                      e.preventDefault();
-                      handleAssistantSend();
-                    }
-                  }}
-                  placeholder="Ask the AI about priorities, deadlines, or study planning..."
-                  rows="4"
-                />
-                <button
-                  type="button"
-                  className="assistant-send-btn"
-                  onClick={() => handleAssistantSend()}
-                  disabled={assistantLoading}
-                >
-                  {assistantLoading ? 'Sending...' : 'Send'}
-                </button>
-              </div>
-            </aside>}
-
-            {!chatOpen && (
-              <div className="chat-toggle-button-container">
-                <button
-                  className="chat-toggle-button"
-                  onClick={() => setChatOpen(true)}
-                  title="Open Study Coach Chat"
-                >
-                  💬
-                </button>
-              </div>
+            ) : (
+              <TaskTable tasks={tasks} onDelete={handleDeleteTask} />
             )}
           </div>
         </div>
       </div>
 
       {showModal && (
-        <CreateAssignmentModal
+        <CreateTaskModal
           onClose={() => setShowModal(false)}
-          onCreate={handleCreateAssignment}
+          onCreate={handleCreateTask}
         />
       )}
     </div>

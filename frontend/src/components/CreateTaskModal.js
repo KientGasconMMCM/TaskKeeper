@@ -7,8 +7,6 @@ function CreateTaskModal({ onClose, onCreate }) {
     taskDescription: '',
     deadline: '',
     category: '',
-    importance: 5,
-    urgency: 5,
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -34,7 +32,7 @@ function CreateTaskModal({ onClose, onCreate }) {
 
     try {
       await onCreate(formData);
-      setFormData({ taskName: '', taskDescription: '', deadline: '', category: '', importance: 5, urgency: 5 });
+      setFormData({ taskName: '', taskDescription: '', deadline: '', category: '' });
     } catch (err) {
       setError('Error creating task');
     } finally {
@@ -102,34 +100,6 @@ function CreateTaskModal({ onClose, onCreate }) {
                 <option value="School">School</option>
                 <option value="Work">Work</option>
               </select>
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="importance">Importance</label>
-              <input
-                type="number"
-                id="importance"
-                name="importance"
-                min="1"
-                max="10"
-                step="1"
-                value={formData.importance}
-                onChange={handleChange}
-              />
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="urgency">Urgency</label>
-              <input
-                type="number"
-                id="urgency"
-                name="urgency"
-                min="1"
-                max="10"
-                step="1"
-                value={formData.urgency}
-                onChange={handleChange}
-              />
             </div>
 
             <div className="modal-footer">
