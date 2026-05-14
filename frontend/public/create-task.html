@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Assignment - Assignment Tracker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a2332 0%, #0f1419 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #fff;
+        }
+
+        .navbar {
+            background-color: rgba(26, 35, 50, 0.8);
+            border: 1px solid #2a3a4a;
+            padding: 15px 30px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar h2 {
+            color: #fff;
+            font-size: 20px;
+        }
+
+        .nav-links a {
+            color: #0aabff;
+            text-decoration: none;
+            margin-left: 20px;
+            font-weight: 700;
+            border-bottom: 2px solid transparent;
+            padding-bottom: 2px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: #3dc2ff;
+            border-bottom-color: #3dc2ff;
+        }
+
+        .logout-btn {
+            background: #0896ee;
+            color: white;
+            border: 2px solid #0896ee;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            letter-spacing: 0.5px;
+        }
+
+        .logout-btn:hover {
+            background: #0aabff;
+            border-color: #0aabff;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(8, 150, 238, 0.3);
+        }
+
+        .container {
+            background-color: rgba(26, 35, 50, 0.8);
+            border: 1px solid #2a3a4a;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            color: #fff;
+            margin-bottom: 30px;
+            font-size: 28px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #ccc;
+            font-weight: 500;
+        }
+
+        input,
+        textarea,
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #2a3a4a;
+            border-radius: 4px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: border-color 0.3s;
+            background-color: #1a2332;
+            color: #fff;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        input:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: #0aabff;
+            box-shadow: 0 0 0 3px rgba(8, 150, 238, 0.2);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 30px;
+        }
+
+        button {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            letter-spacing: 0.5px;
+        }
+
+        .submit-btn {
+            background-color: #0896ee;
+            color: white;
+            border: 2px solid #0896ee;
+        }
+
+        .submit-btn:hover {
+            background-color: #0aabff;
+            border-color: #0aabff;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(8, 150, 238, 0.4);
+        }
+
+        .cancel-btn {
+            background: #2a3a4a;
+            color: #ccc;
+            border: 2px solid #3a4a5a;
+        }
+
+        .cancel-btn:hover {
+            background: #3a4a5a;
+            border-color: #4a5a6a;
+            transform: translateY(-1px);
+        }
+
+        .alert {
+            padding: 12px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .alert.error {
+            background-color: rgba(231, 76, 60, 0.15);
+            color: #e74c3c;
+            border: 1px solid rgba(231, 76, 60, 0.3);
+        }
+
+        .alert.success {
+            background-color: rgba(46, 204, 113, 0.15);
+            color: #2ecc71;
+            border: 1px solid rgba(46, 204, 113, 0.3);
+        }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(4px);
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: #1a2332;
+            border: 1px solid #2a3a4a;
+            border-radius: 10px;
+            padding: 30px;
+            width: 90%;
+            max-width: 480px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+        }
+
+        .modal h2 {
+            color: #fff;
+            margin-bottom: 6px;
+            font-size: 20px;
+        }
+
+        .modal .modal-subtitle {
+            color: #999;
+            font-size: 13px;
+            margin-bottom: 20px;
+        }
+
+        .modal .confirm-detail {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #2a3a4a;
+            font-size: 14px;
+        }
+
+        .modal .confirm-detail:last-of-type {
+            border-bottom: none;
+        }
+
+        .modal .confirm-label {
+            color: #999;
+            font-weight: 500;
+        }
+
+        .modal .confirm-value {
+            color: #fff;
+            font-weight: 600;
+            text-align: right;
+            max-width: 60%;
+            word-break: break-word;
+        }
+
+        .modal .modal-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 24px;
+        }
+
+        .modal .modal-buttons button {
+            flex: 1;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .modal .confirm-btn {
+            background: #0896ee;
+            color: #fff;
+            border: 2px solid #0896ee;
+        }
+
+        .modal .confirm-btn:hover {
+            background: #0aabff;
+            border-color: #0aabff;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(8, 150, 238, 0.3);
+        }
+
+        .modal .goback-btn {
+            background: #2a3a4a;
+            color: #ccc;
+            border: 2px solid #3a4a5a;
+        }
+
+        .modal .goback-btn:hover {
+            background: #3a4a5a;
+            border-color: #4a5a6a;
+            transform: translateY(-1px);
+        }
+
+        @media (max-width: 600px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .container {
+                padding: 20px;
+            }
+
+            .navbar {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h2>Assignment Tracker</h2>
+        <div class="nav-links">
+            <a href="dashboard.html">Dashboard</a>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <h1>Create New Assignment</h1>
+        <p style="color: #999; font-size: 14px; margin-bottom: 24px; line-height: 1.5;">Fill in the details below to add a new assignment. Priority is assigned automatically based on urgency and content.</p>
+        <div id="alert" class="alert"></div>
+        
+        <form id="createTaskForm">
+            <div class="form-group">
+                <label for="title">Assignment Title <span style="color: #e74c3c;">*</span></label>
+                <input 
+                    type="text" 
+                    id="title" 
+                    name="title" 
+                    placeholder="e.g. Submit final report" 
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="description">Description</label>
+                <textarea 
+                    id="description" 
+                    name="description" 
+                    placeholder="What do you need to do? Add details so you remember later."
+                    rows="4"
+                ></textarea>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="dueDate">Due Date <span style="color: #e74c3c;">*</span></label>
+                    <input 
+                        type="date" 
+                        id="dueDate" 
+                        name="dueDate"
+                    >
+                    <span style="font-size: 11px; color: #888; margin-top: 4px; display: block;">When does this need to be done?</span>
+                </div>
+
+                <div class="form-group">
+                    <label>Priority</label>
+                    <div id="priorityPreview" style="padding: 12px; border: 1px solid #2a3a4a; border-radius: 4px; background: #1a2332; color: #fff; min-height: 44px; display: flex; align-items: center;">Auto-assigned when you create the assignment</div>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button type="submit" class="submit-btn">Create Assignment</button>
+                <button type="button" class="cancel-btn" onclick="window.location.href='dashboard.html'">Cancel</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="modal-overlay" id="confirmModal">
+        <div class="modal">
+            <h2>Confirm Assignment Details</h2>
+            <p class="modal-subtitle">Please review your assignment before creating it.</p>
+            <div id="confirmDetails"></div>
+            <div class="modal-buttons">
+                <button class="confirm-btn" id="confirmCreateBtn">Yes, Create Assignment</button>
+                <button class="goback-btn" id="cancelModalBtn">Go Back</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Check if user is logged in
+        window.addEventListener('load', () => {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                window.location.href = 'login.html';
+            }
+        });
+
+        const createTaskForm = document.getElementById('createTaskForm');
+        const alertDiv = document.getElementById('alert');
+
+        function calculatePriority(taskName, taskDescription, deadline) {
+            let score = 0;
+            const text = `${taskName} ${taskDescription}`.toLowerCase();
+            const keywords = ['exam', 'test', 'quiz', 'midterm', 'final', 'presentation', 'project', 'urgent'];
+
+            if (deadline) {
+                const now = new Date();
+                now.setHours(0, 0, 0, 0);
+                const due = new Date(deadline);
+                due.setHours(0, 0, 0, 0);
+                const daysUntilDue = Math.ceil((due - now) / (1000 * 60 * 60 * 24));
+
+                if (daysUntilDue <= 1) score += 3;
+                else if (daysUntilDue <= 3) score += 2;
+                else if (daysUntilDue <= 7) score += 1;
+            }
+
+            if (keywords.some(keyword => text.includes(keyword))) {
+                score += 2;
+            }
+
+            if (taskDescription && taskDescription.length > 200) {
+                score += 1;
+            }
+
+            if (score >= 4) return 'high';
+            if (score >= 2) return 'medium';
+            return 'low';
+        }
+
+        function formatPriorityLabel(priority) {
+            return priority.charAt(0).toUpperCase() + priority.slice(1);
+        }
+
+        createTaskForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const taskName = document.getElementById('title').value.trim();
+            const taskDescription = document.getElementById('description').value;
+            const deadline = document.getElementById('dueDate').value;
+            const priority = calculatePriority(taskName, taskDescription, deadline);
+
+            if (!deadline) {
+                showAlert('Please set a deadline for your assignment.', 'error');
+                return;
+            }
+
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            if (new Date(deadline) < today) {
+                showAlert('You cannot set a deadline in the past. Please choose a future date.', 'error');
+                return;
+            }
+
+            // Check for duplicate task title
+            try {
+                const tasksRes = await fetch('/api/tasks', {
+                    headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` },
+                });
+                if (tasksRes.ok) {
+                    const tasksData = await tasksRes.json();
+                    const duplicate = (tasksData.tasks || []).some(
+                        t => t.task_name.toLowerCase() === taskName.toLowerCase()
+                    );
+                    if (duplicate) {
+                        showAlert('An assignment with this title already exists. Please use a different title.', 'error');
+                        return;
+                    }
+                }
+            } catch (err) {
+                console.error('Error checking duplicates:', err);
+            }
+
+            // Show confirmation modal
+            showConfirmModal({ taskName, taskDescription, deadline, priority });
+        });
+
+        function showConfirmModal(taskData) {
+            const details = document.getElementById('confirmDetails');
+            details.innerHTML = `
+                <div class="confirm-detail">
+                    <span class="confirm-label">Title</span>
+                    <span class="confirm-value">${escapeHtml(taskData.taskName)}</span>
+                </div>
+                <div class="confirm-detail">
+                    <span class="confirm-label">Description</span>
+                    <span class="confirm-value">${taskData.taskDescription ? escapeHtml(taskData.taskDescription) : '<em style="color:#666">None</em>'}</span>
+                </div>
+                <div class="confirm-detail">
+                    <span class="confirm-label">Due Date</span>
+                    <span class="confirm-value">${taskData.deadline}</span>
+                </div>
+                <div class="confirm-detail">
+                    <span class="confirm-label">Priority</span>
+                    <span class="confirm-value">${formatPriorityLabel(taskData.priority)}</span>
+                </div>
+            `;
+            document.getElementById('confirmModal').classList.add('active');
+
+            document.getElementById('confirmCreateBtn').onclick = () => submitTask(taskData);
+            document.getElementById('cancelModalBtn').onclick = () => {
+                document.getElementById('confirmModal').classList.remove('active');
+            };
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        async function submitTask({ taskName, taskDescription, deadline, priority }) {
+            document.getElementById('confirmModal').classList.remove('active');
+
+            try {
+                const response = await fetch('/api/tasks', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                    },
+                    body: JSON.stringify({
+                        taskName,
+                        taskDescription,
+                        deadline,
+                        priority,
+                    }),
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showAlert('Assignment created successfully!', 'success');
+                    setTimeout(() => {
+                        window.location.href = 'dashboard.html';
+                    }, 1500);
+                } else {
+                    showAlert(data.message || 'Failed to create assignment', 'error');
+                }
+            } catch (error) {
+                showAlert('An error occurred. Please try again.', 'error');
+                console.error('Error:', error);
+            }
+        }
+
+        function showAlert(message, type) {
+            alertDiv.textContent = message;
+            alertDiv.className = `alert ${type}`;
+            alertDiv.style.display = 'block';
+        }
+
+        function logout() {
+            localStorage.removeItem('token');
+            window.location.href = 'login.html';
+        }
+    </script>
+</body>
+</html>
