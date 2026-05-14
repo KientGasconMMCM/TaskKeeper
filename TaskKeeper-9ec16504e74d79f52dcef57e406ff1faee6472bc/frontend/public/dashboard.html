@@ -1,0 +1,1451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Assignment Tracker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a2332 0%, #0f1419 100%);
+            color: #fff;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background-color: rgba(26, 35, 50, 0.8);
+            border-bottom: 1px solid #2a3a4a;
+            color: white;
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar h1 {
+            font-size: 24px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .nav-links a, .logout-btn {
+            color: white;
+            text-decoration: none;
+            font-weight: 700;
+            background: rgba(8, 150, 238, 0.25);
+            padding: 10px 20px;
+            border-radius: 6px;
+            border: 2px solid rgba(8, 150, 238, 0.4);
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            letter-spacing: 0.5px;
+        }
+
+        .nav-links a:hover, .logout-btn:hover {
+            background: rgba(8, 150, 238, 0.45);
+            border-color: #0896ee;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(8, 150, 238, 0.3);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .header h2 {
+            font-size: 28px;
+            color: #fff;
+        }
+
+        .create-btn {
+            background-color: #0896ee;
+            color: white;
+            padding: 14px 28px;
+            border: 2px solid #0896ee;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+            letter-spacing: 0.5px;
+        }
+
+        .create-btn:hover {
+            background-color: #0aabff;
+            border-color: #0aabff;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(8, 150, 238, 0.4);
+        }
+
+        .filters {
+            background-color: rgba(26, 35, 50, 0.8);
+            border: 1px solid #2a3a4a;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .filter-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .filter-group label {
+            font-weight: 500;
+            color: #ccc;
+        }
+
+        .filter-group select {
+            padding: 10px 14px;
+            border: 2px solid #2a3a4a;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            background-color: #1a2332;
+            color: #fff;
+            transition: all 0.3s ease;
+        }
+
+        .filter-group select:hover {
+            border-color: #0896ee;
+        }
+
+        .filter-group select:focus {
+            outline: none;
+            border-color: #0aabff;
+            box-shadow: 0 0 0 3px rgba(8, 150, 238, 0.15);
+        }
+
+        .tasks-container {
+            background-color: rgba(26, 35, 50, 0.8);
+            border: 1px solid #2a3a4a;
+            border-radius: 8px;
+        }
+
+        .task-item {
+            padding: 20px;
+            border-bottom: 1px solid #2a3a4a;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.3s;
+        }
+
+        .task-item:hover {
+            background: rgba(42, 58, 74, 0.5);
+        }
+
+        .task-item:first-child {
+            border-radius: 8px 8px 0 0;
+        }
+
+        .task-item:last-child {
+            border-bottom: none;
+            border-radius: 0 0 8px 8px;
+        }
+
+        .task-info {
+            flex: 1;
+        }
+
+        .task-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #fff;
+        }
+
+        .task-description {
+            color: #999;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .task-meta {
+            display: flex;
+            gap: 15px;
+            font-size: 13px;
+            color: #999;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-weight: 500;
+            font-size: 12px;
+        }
+
+        .badge.priority-high {
+            background: rgba(231, 76, 60, 0.2);
+            color: #e74c3c;
+        }
+
+        .badge.priority-medium {
+            background: rgba(241, 196, 15, 0.2);
+            color: #f1c40f;
+        }
+
+        .badge.priority-low {
+            background: rgba(46, 204, 113, 0.2);
+            color: #2ecc71;
+        }
+
+        .badge.status-pending {
+            background: rgba(8, 150, 238, 0.2);
+            color: #0896ee;
+        }
+
+        .badge.status-completed {
+            background: rgba(46, 204, 113, 0.2);
+            color: #2ecc71;
+        }
+
+        .badge.category-badge {
+            background: rgba(155, 89, 182, 0.2);
+            color: #9b59b6;
+        }
+
+        .task-actions {
+            position: relative;
+            margin-left: 20px;
+        }
+
+        .kebab-btn {
+            background: rgba(42, 58, 74, 0.5);
+            border: 2px solid #2a3a4a;
+            color: #ddd;
+            font-size: 22px;
+            cursor: pointer;
+            padding: 8px 12px;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            letter-spacing: 2px;
+            line-height: 1;
+        }
+
+        .kebab-btn:hover {
+            background: #2a3a4a;
+            border-color: #0896ee;
+            color: #fff;
+            transform: scale(1.05);
+        }
+
+        .dropdown-menu {
+            display: none;
+            position: fixed;
+            background: #1e2d3d;
+            border: 1px solid #2a3a4a;
+            border-radius: 6px;
+            min-width: 150px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+            z-index: 1000;
+            overflow: hidden;
+        }
+
+        .dropdown-menu.show {
+            display: block;
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+            padding: 12px 18px;
+            border: none;
+            background: none;
+            color: #ddd;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.2s ease;
+        }
+
+        .dropdown-item:hover {
+            background: rgba(8, 150, 238, 0.15);
+            color: #fff;
+            padding-left: 22px;
+        }
+
+        .dropdown-item.delete {
+            color: #e74c3c;
+        }
+
+        .dropdown-item.delete:hover {
+            background: rgba(231, 76, 60, 0.15);
+        }
+
+        /* Edit Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.6);
+            z-index: 200;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-overlay.show {
+            display: flex;
+        }
+
+        .modal {
+            background: #1a2332;
+            border: 1px solid #2a3a4a;
+            border-radius: 8px;
+            padding: 30px;
+            width: 100%;
+            max-width: 480px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        }
+
+        .modal h3 {
+            margin-bottom: 20px;
+            font-size: 20px;
+        }
+
+        .modal .form-group {
+            margin-bottom: 16px;
+        }
+
+        .modal label {
+            display: block;
+            margin-bottom: 6px;
+            color: #ccc;
+            font-weight: 500;
+        }
+
+        .modal input, .modal textarea, .modal select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #2a3a4a;
+            border-radius: 4px;
+            background: #0f1419;
+            color: #fff;
+            font-size: 14px;
+        }
+
+        .modal textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .modal-btns {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+
+        .modal-btns button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .modal-btn-cancel {
+            background: #2a3a4a;
+            color: #ccc;
+            border: 2px solid #3a4a5a;
+            border-radius: 6px;
+        }
+
+        .modal-btn-cancel:hover {
+            background: #3a4a5a;
+            border-color: #4a5a6a;
+            transform: translateY(-1px);
+        }
+
+        .modal-btn-save {
+            background: #0896ee;
+            color: #fff;
+            border: 2px solid #0896ee;
+            border-radius: 6px;
+        }
+
+        .modal-btn-save:hover {
+            background: #0aabff;
+            border-color: #0aabff;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(8, 150, 238, 0.3);
+        }
+
+        .empty-state {
+            padding: 60px 20px;
+            text-align: center;
+            color: #999;
+        }
+
+        .empty-state h3 {
+            font-size: 20px;
+            margin-bottom: 10px;
+            color: #ccc;
+        }
+
+        .alert {
+            padding: 12px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .alert.error {
+            background-color: rgba(231, 76, 60, 0.15);
+            color: #e74c3c;
+            border: 1px solid rgba(231, 76, 60, 0.3);
+        }
+
+        .alert.success {
+            background-color: rgba(46, 204, 113, 0.15);
+            color: #2ecc71;
+            border: 1px solid rgba(46, 204, 113, 0.3);
+        }
+
+        .completed-toggle-btn {
+            width: 100%;
+            padding: 16px 20px;
+            margin-top: 20px;
+            background-color: rgba(46, 204, 113, 0.1);
+            border: 2px solid rgba(46, 204, 113, 0.4);
+            border-radius: 8px;
+            color: #2ecc71;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.3s ease;
+        }
+
+        .completed-toggle-btn:hover {
+            background-color: rgba(46, 204, 113, 0.2);
+            border-color: rgba(46, 204, 113, 0.7);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(46, 204, 113, 0.2);
+        }
+
+        .completed-toggle-btn .toggle-arrow {
+            transition: transform 0.3s ease;
+            font-size: 12px;
+        }
+
+        .completed-toggle-btn.open .toggle-arrow {
+            transform: rotate(180deg);
+        }
+
+        .completed-section {
+            margin-top: 10px;
+            overflow: hidden;
+            max-height: 0;
+            transition: max-height 0.4s ease;
+        }
+
+        .completed-section.open {
+            max-height: 5000px;
+        }
+
+        .completed-section .tasks-container {
+            opacity: 0.8;
+        }
+
+        .completed-section .task-title {
+            text-decoration: line-through;
+            color: #888;
+        }
+
+        .completed-section .task-description {
+            text-decoration: line-through;
+        }
+
+        .task-stats {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .stat-card {
+            flex: 1;
+            min-width: 120px;
+            background-color: rgba(26, 35, 50, 0.8);
+            border: 1px solid #2a3a4a;
+            border-radius: 8px;
+            padding: 16px;
+            text-align: center;
+        }
+
+        .stat-card .stat-number {
+            font-size: 28px;
+            font-weight: 700;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .stat-card .stat-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-card.stat-total .stat-number { color: #0896ee; }
+        .stat-card.stat-pending .stat-number { color: #f1c40f; }
+        .stat-card.stat-overdue .stat-number { color: #e74c3c; }
+        .stat-card.stat-completed .stat-number { color: #2ecc71; }
+
+        .stat-card.stat-overdue { border-color: rgba(231, 76, 60, 0.4); }
+
+        .task-item.overdue {
+            border-left: 3px solid #e74c3c;
+        }
+
+        .task-item.overdue .task-title::after {
+            content: ' — OVERDUE';
+            color: #e74c3c;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .task-item.due-soon {
+            border-left: 3px solid #f1c40f;
+        }
+
+        .task-item.due-soon .task-title::after {
+            content: ' — DUE SOON';
+            color: #f1c40f;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .filters-heading {
+            font-size: 11px;
+            font-weight: 700;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+            width: 100%;
+        }
+
+        @media (max-width: 768px) {
+            .task-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .task-actions {
+                margin-left: 0;
+                margin-top: 10px;
+                align-self: flex-end;
+            }
+
+            .filters {
+                flex-direction: column;
+            }
+
+            .header {
+                flex-direction: column;
+                gap: 10px;
+                align-items: flex-start;
+            }
+
+            .main-wrapper {
+                flex-direction: column;
+            }
+
+            .chat-box-wrapper {
+                width: 100%;
+                margin-top: 20px;
+                position: static;
+            }
+
+            .chat-box {
+                position: static;
+            }
+        }
+
+        /* Chat Box Styles */
+        .main-wrapper {
+            display: flex;
+            gap: 24px;
+            align-items: flex-start;
+        }
+
+        .main-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .chat-box-wrapper {
+            width: 360px;
+            position: sticky;
+            top: 30px;
+        }
+
+        .chat-box {
+            background: rgba(10, 18, 30, 0.78);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            box-shadow: 0 18px 50px rgba(0, 0, 0, 0.25);
+        }
+
+        .chat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 16px;
+        }
+
+        .chat-label {
+            margin: 0 0 4px;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1.4px;
+            color: #7fd0ff;
+        }
+
+        .chat-header h3 {
+            margin: 0;
+            font-size: 20px;
+            color: #fff;
+        }
+
+        .chat-close-btn {
+            background: transparent;
+            border: none;
+            color: #9fb6c9;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 0;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: color 0.2s ease;
+            flex-shrink: 0;
+        }
+
+        .chat-close-btn:hover {
+            color: #d8e7f4;
+        }
+
+        .chat-messages {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-height: 360px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+
+        .chat-message {
+            border-radius: 16px;
+            padding: 14px 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .chat-message.user {
+            background: rgba(8, 150, 238, 0.12);
+            border-color: rgba(8, 150, 238, 0.22);
+            margin-left: 18px;
+        }
+
+        .chat-message.assistant {
+            margin-right: 18px;
+        }
+
+        .message-role {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 6px;
+            color: #9fb6c9;
+        }
+
+        .chat-message p {
+            margin: 0;
+            color: #e6eef6;
+            font-size: 14px;
+            line-height: 1.55;
+        }
+
+        .chat-quick-prompts {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .chat-quick-prompts button {
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.04);
+            color: #d8e7f4;
+            border-radius: 999px;
+            padding: 8px 12px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: left;
+        }
+
+        .chat-quick-prompts button:hover {
+            background: rgba(8, 150, 238, 0.16);
+            border-color: rgba(8, 150, 238, 0.3);
+        }
+
+        .chat-input-box {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .chat-input-box textarea {
+            width: 100%;
+            resize: vertical;
+            min-height: 96px;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(8, 12, 18, 0.6);
+            color: #fff;
+            padding: 14px 16px;
+            font-size: 14px;
+            line-height: 1.5;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .chat-input-box textarea:focus {
+            outline: none;
+            border-color: rgba(8, 150, 238, 0.45);
+            box-shadow: 0 0 0 3px rgba(8, 150, 238, 0.12);
+        }
+
+        .chat-send-btn {
+            align-self: flex-end;
+            border: none;
+            border-radius: 999px;
+            padding: 11px 18px;
+            background: linear-gradient(135deg, #0896ee, #0aabff);
+            color: #fff;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .chat-send-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 22px rgba(8, 150, 238, 0.28);
+        }
+
+        .chat-toggle-btn {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            border: 2px solid rgba(8, 150, 238, 0.4);
+            background: linear-gradient(135deg, rgba(8, 150, 238, 0.2), rgba(10, 171, 255, 0.2));
+            color: #7fd0ff;
+            font-size: 28px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(8, 150, 238, 0.15);
+        }
+
+        .chat-toggle-btn:hover {
+            transform: scale(1.1);
+            border-color: rgba(8, 150, 238, 0.6);
+            background: linear-gradient(135deg, rgba(8, 150, 238, 0.3), rgba(10, 171, 255, 0.3));
+            box-shadow: 0 6px 20px rgba(8, 150, 238, 0.25);
+        }
+
+        .chat-toggle-btn:active {
+            transform: scale(0.95);
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h1>Assignment Tracker</h1>
+        <div class="nav-links">
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="main-wrapper">
+            <div class="main-content">
+                <div class="header">
+                    <div>
+                        <h2 id="welcomeHeader">Welcome</h2>
+                        <p style="color: #888; font-size: 13px; margin-top: 4px;">Track your assignments, prioritize what matters, and hit every deadline.</p>
+                    </div>
+                    <a href="create-task.html" class="create-btn">+ Create Task</a>
+                </div>
+
+                <div id="alert" class="alert"></div>
+
+                <div class="task-stats" id="taskStats" style="display:none;">
+                    <div class="stat-card stat-total">
+                        <span class="stat-number" id="statTotal">0</span>
+                        <span class="stat-label">Total Tasks</span>
+                    </div>
+                    <div class="stat-card stat-pending">
+                        <span class="stat-number" id="statPending">0</span>
+                        <span class="stat-label">Not Submitted</span>
+                    </div>
+                    <div class="stat-card stat-overdue">
+                        <span class="stat-number" id="statOverdue">0</span>
+                        <span class="stat-label">Overdue</span>
+                    </div>
+                    <div class="stat-card stat-completed">
+                        <span class="stat-number" id="statDone">0</span>
+                        <span class="stat-label">Submitted</span>
+                    </div>
+                </div>
+
+                <div class="filters">
+                    <div class="filters-heading">🔍 Filter your assignments</div>
+                    <div class="filter-group">
+                        <label for="priorityFilter">Priority:</label>
+                        <select id="priorityFilter" onchange="filterTasks()">
+                            <option value="">All</option>
+                            <option value="high">High</option>
+                            <option value="medium">Medium</option>
+                            <option value="low">Low</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="statusFilter">Status:</label>
+                        <select id="statusFilter" onchange="filterTasks()">
+                            <option value="">All</option>
+                            <option value="not_submitted">Not Submitted</option>
+                            <option value="submitted">Submitted</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="tasksContainer" class="tasks-container">
+                    <div class="empty-state">
+                        <h3>Loading assignments...</h3>
+                    </div>
+                </div>
+
+                <button class="completed-toggle-btn" id="completedToggleBtn" onclick="toggleCompletedSection()" style="display:none;">
+                    <span>✅ Submitted Assignments (<span id="completedCount">0</span>)</span>
+                    <span class="toggle-arrow">▼</span>
+                </button>
+                <div class="completed-section" id="completedSection">
+                    <div id="completedTasksContainer" class="tasks-container"></div>
+                </div>
+            </div>
+
+            <!-- Study Coach Chat Box -->
+            <div id="chatBoxWrapper" class="chat-box-wrapper">
+                <div id="chatBox" class="chat-box">
+                    <div class="chat-header">
+                        <div>
+                            <p class="chat-label">AI Chat Box</p>
+                            <h3>Study Coach</h3>
+                        </div>
+                        <button class="chat-close-btn" onclick="toggleChatBox()" title="Minimize Chat">−</button>
+                    </div>
+                    
+                    <div class="chat-messages" id="chatMessages">
+                        <div class="chat-message assistant">
+                            <div class="message-role">Coach</div>
+                            <p>Ask me what to work on first, how to handle an overdue assignment, or how to plan a study session.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="chat-quick-prompts">
+                        <button onclick="sendChatMessage('What should I do first today?')">What should I do first today?</button>
+                        <button onclick="sendChatMessage('How do I catch up on overdue work?')">How do I catch up on overdue work?</button>
+                        <button onclick="sendChatMessage('Make me a short study plan for tonight.')">Make me a short study plan for tonight.</button>
+                    </div>
+                    
+                    <div class="chat-input-box">
+                        <textarea id="chatInput" placeholder="Ask the AI about priorities, deadlines, or study planning..." rows="4" onkeydown="handleChatKeydown(event)"></textarea>
+                        <button class="chat-send-btn" onclick="sendChatMessage(document.getElementById('chatInput').value)">Send</button>
+                    </div>
+                </div>
+                
+                <!-- Toggle button when chat is minimized -->
+                <button id="chatToggleBtn" class="chat-toggle-btn" onclick="toggleChatBox()" style="display: none;" title="Open Study Coach Chat">💬</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Task Modal -->
+    <div class="modal-overlay" id="editModal">
+        <div class="modal">
+            <h3>Edit Task</h3>
+            <input type="hidden" id="editTaskId">
+            <div class="form-group">
+                <label for="editTaskName">Task Name</label>
+                <input type="text" id="editTaskName" required>
+            </div>
+            <div class="form-group">
+                <label for="editTaskDescription">Description</label>
+                <textarea id="editTaskDescription"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="editTaskDeadline">Deadline</label>
+                <input type="date" id="editTaskDeadline">
+            </div>
+            <div class="form-group">
+                <label for="editTaskStatus">Status</label>
+                <select id="editTaskStatus">
+                    <option value="not_submitted">Not Submitted</option>
+                    <option value="submitted">Submitted</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="editTaskPriority">Priority</label>
+                <select id="editTaskPriority">
+                    <option value="low">Low</option>
+                    <option value="medium">Medium</option>
+                    <option value="high">High</option>
+                </select>
+            </div>
+            <div class="modal-btns">
+                <button class="modal-btn-cancel" onclick="closeEditModal()">Cancel</button>
+                <button class="modal-btn-save" onclick="saveEdit()">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = '';
+        let allTasks = [];
+
+        function normalizeStatus(status) {
+            if (status === 'submitted' || status === 'completed') {
+                return 'submitted';
+            }
+            return 'not_submitted';
+        }
+
+        function displayStatus(status) {
+            return normalizeStatus(status) === 'submitted' ? 'Submitted' : 'Not Submitted';
+        }
+
+        // Decode JWT to get username
+        function getUsername() {
+            const token = localStorage.getItem('token');
+            if (!token) return null;
+            try {
+                const payload = JSON.parse(atob(token.split('.')[1]));
+                return payload.username;
+            } catch (e) {
+                return null;
+            }
+        }
+
+        // Check if user is logged in
+        window.addEventListener('load', () => {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                window.location.href = 'login.html';
+            } else {
+                const username = getUsername();
+                document.getElementById('welcomeHeader').textContent = username ? `Welcome, ${username}` : 'Welcome';
+                loadTasks();
+            }
+        });
+
+        // Close dropdown when clicking elsewhere
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.task-actions')) {
+                document.querySelectorAll('.dropdown-menu').forEach(m => m.classList.remove('show'));
+            }
+        });
+
+        async function loadTasks() {
+            try {
+                const response = await fetch(`${API_BASE}/api/tasks`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                    },
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    allTasks = data.tasks || [];
+                    renderTasks(allTasks);
+                } else if (response.status === 401 || response.status === 403) {
+                    localStorage.removeItem('token');
+                    window.location.href = 'login.html';
+                } else {
+                    console.error('Failed to load tasks, status:', response.status);
+                    showAlert('Failed to load tasks', 'error');
+                }
+            } catch (error) {
+                showAlert('Could not connect to server', 'error');
+                console.error('Error:', error);
+            }
+        }
+
+        function renderTasks(tasks) {
+            const container = document.getElementById('tasksContainer');
+            const completedContainer = document.getElementById('completedTasksContainer');
+            const completedToggleBtn = document.getElementById('completedToggleBtn');
+            const completedCountEl = document.getElementById('completedCount');
+            const statsDiv = document.getElementById('taskStats');
+
+            const activeTasks = tasks.filter(t => normalizeStatus(t.status) !== 'submitted');
+            const completedTasks = tasks.filter(t => normalizeStatus(t.status) === 'submitted');
+
+            // Calculate overdue count
+            const now = new Date();
+            now.setHours(0, 0, 0, 0);
+            const overdueTasks = activeTasks.filter(t => t.deadline && new Date(t.deadline) < now);
+
+            // Update stats
+            statsDiv.style.display = 'flex';
+            document.getElementById('statTotal').textContent = tasks.length;
+            document.getElementById('statPending').textContent = activeTasks.length;
+            document.getElementById('statOverdue').textContent = overdueTasks.length;
+            document.getElementById('statDone').textContent = completedTasks.length;
+
+            // Sort active tasks by priority: high first, medium middle, low last
+            const priorityOrder = { high: 0, medium: 1, low: 2 };
+            activeTasks.sort((a, b) => {
+                const pa = priorityOrder[a.priority || 'medium'] ?? 1;
+                const pb = priorityOrder[b.priority || 'medium'] ?? 1;
+                return pa - pb;
+            });
+
+            // Render active tasks
+            if (activeTasks.length === 0 && completedTasks.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <h3>📋 No assignments yet</h3>
+                        <p>Click <strong>"+ Create Task"</strong> above to add your first assignment and start tracking your deadlines.</p>
+                    </div>
+                `;
+            } else if (activeTasks.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <h3>🎉 All caught up!</h3>
+                        <p>You have no not submitted assignments. Great job staying on top of things!</p>
+                    </div>
+                `;
+            } else {
+                container.innerHTML = activeTasks.map(task => renderTaskItem(task, false)).join('');
+            }
+
+            // Render completed tasks section
+            if (completedTasks.length > 0) {
+                completedToggleBtn.style.display = 'flex';
+                completedCountEl.textContent = completedTasks.length;
+                completedContainer.innerHTML = completedTasks.map(task => renderTaskItem(task, true)).join('');
+            } else {
+                completedToggleBtn.style.display = 'none';
+                completedContainer.innerHTML = '';
+                document.getElementById('completedSection').classList.remove('open');
+                completedToggleBtn.classList.remove('open');
+            }
+        }
+
+        function renderTaskItem(task, isCompleted) {
+            // Determine urgency class
+            let urgencyClass = '';
+            if (!isCompleted && task.deadline) {
+                const now = new Date();
+                now.setHours(0, 0, 0, 0);
+                const deadlineDate = new Date(task.deadline);
+                deadlineDate.setHours(0, 0, 0, 0);
+                const diffDays = (deadlineDate - now) / (1000 * 60 * 60 * 24);
+                if (diffDays < 0) {
+                    urgencyClass = 'overdue';
+                } else if (diffDays <= 1) {
+                    urgencyClass = 'due-soon';
+                }
+            }
+
+            if (isCompleted) {
+                return `
+                    <div class="task-item">
+                        <div class="task-info">
+                            <div class="task-title">${escapeHtml(task.task_name)}</div>
+                            ${task.task_description ? `<div class="task-description">${escapeHtml(task.task_description)}</div>` : ''}
+                            <div class="task-meta">
+                                ${task.deadline ? `<span>📅 ${new Date(task.deadline).toLocaleDateString()}</span>` : ''}
+                                <span class="badge priority-${task.priority || 'medium'}">${task.priority ? task.priority.charAt(0).toUpperCase() + task.priority.slice(1) : 'Medium'}</span>
+                                <span class="badge status-submitted">Submitted</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            return `
+                <div class="task-item ${urgencyClass}">
+                    <div class="task-info">
+                        <div class="task-title">${escapeHtml(task.task_name)}</div>
+                        ${task.task_description ? `<div class="task-description">${escapeHtml(task.task_description)}</div>` : ''}
+                        <div class="task-meta">
+                            ${task.deadline ? `<span>📅 ${new Date(task.deadline).toLocaleDateString()}</span>` : ''}
+                            <span class="badge priority-${task.priority || 'medium'}">${task.priority ? task.priority.charAt(0).toUpperCase() + task.priority.slice(1) : 'Medium'}</span>
+                            <span class="badge status-${normalizeStatus(task.status)}">${displayStatus(task.status)}</span>
+                        </div>
+                    </div>
+                    <div class="task-actions">
+                        <button class="kebab-btn" onclick="toggleMenu(event, ${task.id})" title="Actions">⋮</button>
+                        <div class="dropdown-menu" id="menu-${task.id}">
+                            <button class="dropdown-item" onclick="openEditModal(${task.id}, '${escapeAttr(task.task_name)}', '${escapeAttr(task.task_description || '')}', '${task.deadline || ''}', '${normalizeStatus(task.status)}', '${task.priority || 'medium'}')">
+                                ✏️ Edit
+                            </button>
+                            <button class="dropdown-item" onclick="toggleTask(${task.id}, '${normalizeStatus(task.status)}', '${escapeAttr(task.task_name)}', '${escapeAttr(task.task_description || '')}', '${task.deadline || ''}', '${task.priority || 'medium'}')">
+                                ✅ Toggle Submission
+                            </button>
+                            <button class="dropdown-item delete" onclick="deleteTask(${task.id})">
+                                🗑️ Delete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function toggleCompletedSection() {
+            const section = document.getElementById('completedSection');
+            const btn = document.getElementById('completedToggleBtn');
+            section.classList.toggle('open');
+            btn.classList.toggle('open');
+        }
+
+        function filterTasks() {
+            const priorityFilter = document.getElementById('priorityFilter').value;
+            const statusFilter = document.getElementById('statusFilter').value;
+
+            const filtered = allTasks.filter(task => {
+                const priorityMatch = !priorityFilter || task.priority === priorityFilter;
+                const statusMatch = !statusFilter || normalizeStatus(task.status) === statusFilter;
+                return priorityMatch && statusMatch;
+            });
+
+            renderTasks(filtered);
+        }
+
+        async function toggleTask(taskId, currentStatus, taskName, taskDescription, deadline, priority) {
+            try {
+                const newStatus = normalizeStatus(currentStatus) === 'submitted' ? 'not_submitted' : 'submitted';
+                
+                const response = await fetch(`${API_BASE}/api/tasks/${taskId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                    },
+                    body: JSON.stringify({ taskName, taskDescription, deadline, status: newStatus, priority }),
+                });
+
+                if (response.ok) {
+                    loadTasks();
+                } else {
+                    showAlert('Failed to update task', 'error');
+                }
+            } catch (error) {
+                showAlert('An error occurred', 'error');
+                console.error('Error:', error);
+            }
+        }
+
+        async function deleteTask(taskId) {
+            if (!confirm('Are you sure you want to delete this task?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/api/tasks/${taskId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                    },
+                });
+
+                if (response.ok) {
+                    showAlert('Task deleted successfully', 'success');
+                    loadTasks();
+                } else {
+                    showAlert('Failed to delete task', 'error');
+                }
+            } catch (error) {
+                showAlert('An error occurred', 'error');
+                console.error('Error:', error);
+            }
+        }
+
+        function showAlert(message, type) {
+            const alertDiv = document.getElementById('alert');
+            alertDiv.textContent = message;
+            alertDiv.className = `alert ${type}`;
+            alertDiv.style.display = 'block';
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function escapeAttr(text) {
+            return String(text).replace(/&/g,'&amp;').replace(/'/g,'\'').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+        }
+
+        function toggleMenu(event, taskId) {
+            event.stopPropagation();
+            const menu = document.getElementById(`menu-${taskId}`);
+            document.querySelectorAll('.dropdown-menu').forEach(m => {
+                if (m.id !== `menu-${taskId}`) m.classList.remove('show');
+            });
+            menu.classList.toggle('show');
+
+            if (menu.classList.contains('show')) {
+                const btn = event.currentTarget;
+                const rect = btn.getBoundingClientRect();
+                const menuHeight = menu.scrollHeight;
+                const spaceBelow = window.innerHeight - rect.bottom;
+
+                if (spaceBelow < menuHeight + 8) {
+                    menu.style.top = `${rect.top - menuHeight - 4}px`;
+                } else {
+                    menu.style.top = `${rect.bottom + 4}px`;
+                }
+                menu.style.left = `${rect.right - menu.offsetWidth}px`;
+            }
+        }
+
+        function openEditModal(taskId, name, description, deadline, status, priority) {
+            document.querySelectorAll('.dropdown-menu').forEach(m => m.classList.remove('show'));
+            document.getElementById('editTaskId').value = taskId;
+            document.getElementById('editTaskName').value = name;
+            document.getElementById('editTaskDescription').value = description;
+            document.getElementById('editTaskDeadline').value = deadline ? deadline.split('T')[0] : '';
+            document.getElementById('editTaskStatus').value = normalizeStatus(status);
+            document.getElementById('editTaskPriority').value = priority || 'medium';
+            document.getElementById('editModal').classList.add('show');
+        }
+
+        function closeEditModal() {
+            document.getElementById('editModal').classList.remove('show');
+        }
+
+        async function saveEdit() {
+            const taskId = document.getElementById('editTaskId').value;
+            const taskName = document.getElementById('editTaskName').value;
+            const taskDescription = document.getElementById('editTaskDescription').value;
+            const deadline = document.getElementById('editTaskDeadline').value;
+            const status = document.getElementById('editTaskStatus').value;
+            const priority = document.getElementById('editTaskPriority').value;
+
+            if (!taskName) {
+                alert('Task name is required');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/api/tasks/${taskId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                    },
+                    body: JSON.stringify({ taskName, taskDescription, deadline, status, priority }),
+                });
+
+                if (response.ok) {
+                    closeEditModal();
+                    showAlert('Task updated successfully', 'success');
+                    loadTasks();
+                } else {
+                    showAlert('Failed to update task', 'error');
+                }
+            } catch (error) {
+                showAlert('An error occurred', 'error');
+                console.error('Error:', error);
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('token');
+            window.location.href = 'login.html';
+        }
+
+        function toggleChatBox() {
+            const chatBox = document.getElementById('chatBox');
+            const toggleBtn = document.getElementById('chatToggleBtn');
+            
+            if (chatBox.style.display === 'none') {
+                chatBox.style.display = 'flex';
+                toggleBtn.style.display = 'none';
+            } else {
+                chatBox.style.display = 'none';
+                toggleBtn.style.display = 'flex';
+            }
+        }
+
+        function handleChatKeydown(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                sendChatMessage(document.getElementById('chatInput').value);
+            }
+        }
+
+        // Store chat messages for conversation context
+        let chatMessages = [
+            { role: 'assistant', content: 'Ask me what to work on first, how to handle an overdue assignment, or how to plan a study session.' }
+        ];
+
+        async function sendChatMessage(message) {
+            message = message.trim();
+            if (!message) return;
+
+            // Add user message to chat
+            const chatMessagesContainer = document.getElementById('chatMessages');
+            const userMessageDiv = document.createElement('div');
+            userMessageDiv.className = 'chat-message user';
+            userMessageDiv.innerHTML = `
+                <div class="message-role">You</div>
+                <p>${escapeHtml(message)}</p>
+            `;
+            chatMessagesContainer.appendChild(userMessageDiv);
+
+            // Clear input
+            document.getElementById('chatInput').value = '';
+
+            // Scroll to bottom
+            chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight;
+
+            // Add message to conversation history
+            chatMessages.push({ role: 'user', content: message });
+
+            // Show thinking indicator
+            const assistantMessageDiv = document.createElement('div');
+            assistantMessageDiv.className = 'chat-message assistant';
+            assistantMessageDiv.innerHTML = `
+                <div class="message-role">Coach</div>
+                <p>Thinking through your question...</p>
+            `;
+            chatMessagesContainer.appendChild(assistantMessageDiv);
+            chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight;
+
+            // Call AI API
+            try {
+                const apiKey = 'AIzaSyAsXjhddbyaKNJkDrqJUU2vVqJrvVhVbmE'; // Using a public API key for demo
+                const username = getUsername() || 'Student';
+                
+                // Build transcript from last 10 messages
+                const transcript = chatMessages
+                    .slice(-10)
+                    .map((msg) => `${msg.role === 'user' ? 'Student' : 'Coach'}: ${msg.content}`)
+                    .join('\n');
+
+                const prompt = `You are the AI assistant for Assignment Tracker. Help students organize assignments, prioritize work, and plan study time. Be concise, encouraging, and practical. Avoid long explanations and end with a clear next step when helpful.
+
+Student name: ${username}
+
+Conversation:
+${transcript}
+
+Reply with 3-6 short sentences.`;
+
+                const url = new URL('https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent');
+                url.searchParams.append('key', apiKey);
+
+                const response = await fetch(url.toString(), {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        contents: [
+                            {
+                                parts: [{ text: prompt }],
+                            },
+                        ],
+                        generationConfig: {
+                            temperature: 0.7,
+                            maxOutputTokens: 256,
+                        },
+                    }),
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    const aiResponse = data.candidates?.[0]?.content?.parts?.[0]?.text || 
+                        'I can help you prioritize assignments, turn a deadline into a study plan, or break a big project into the next three steps. Ask me what to do first, how to handle an overdue item, or how to prepare for a due date.';
+                    
+                    assistantMessageDiv.innerHTML = `
+                        <div class="message-role">Coach</div>
+                        <p>${escapeHtml(aiResponse)}</p>
+                    `;
+                    
+                    // Add to message history
+                    chatMessages.push({ role: 'assistant', content: aiResponse });
+                } else {
+                    assistantMessageDiv.innerHTML = `
+                        <div class="message-role">Coach</div>
+                        <p>I can help you prioritize assignments, turn a deadline into a study plan, or break a big project into the next three steps. Ask me what to do first, how to handle an overdue item, or how to prepare for a due date.</p>
+                    `;
+                }
+            } catch (error) {
+                console.error('Chat error:', error);
+                assistantMessageDiv.innerHTML = `
+                    <div class="message-role">Coach</div>
+                    <p>I can help you prioritize assignments, turn a deadline into a study plan, or break a big project into the next three steps. Ask me what to do first, how to handle an overdue item, or how to prepare for a due date.</p>
+                `;
+            }
+
+            chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight;
+        }
+    </script>
+</body>
+</html>
