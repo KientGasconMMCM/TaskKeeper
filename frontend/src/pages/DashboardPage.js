@@ -140,12 +140,13 @@ function DashboardPage({ user, onLogout }) {
 
       <div className="dashboard-content">
         <div className="dashboard-sidebar">
-          <div className="sidebar-label">MANAGE ASSIGNMENTS</div>
+          <div className="sidebar-label">
+            <span role="img" aria-label="Assignments" style={{marginRight: '8px'}}>📋</span>
+            MANAGE ASSIGNMENTS
+          </div>
           <button onClick={() => setShowModal(true)} className="btn-primary create-btn">
+            <span role="img" aria-label="Create" style={{marginRight: '6px'}}>➕</span>
             CREATE
-          </button>
-          <button onClick={() => navigate('/coach')} className="btn-secondary coach-btn">
-            STUDY COACH
           </button>
         </div>
 

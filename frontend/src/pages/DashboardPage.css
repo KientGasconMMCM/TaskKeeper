@@ -53,36 +53,69 @@
 }
 
 .sidebar-label {
-  background-color: #f0f0f0;
-  color: #1a1a1a;
-  padding: 10px 12px;
-  border-radius: 3px;
-  font-size: 10px;
-  font-weight: 700;
+  background: linear-gradient(90deg, #0aabff 0%, #0896ee 100%);
+  color: #fff;
+  padding: 12px 0;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 800;
   text-align: center;
-  letter-spacing: 1px;
+  letter-spacing: 1.5px;
   line-height: 1.2;
+  margin-bottom: 10px;
+  box-shadow: 0 2px 8px rgba(8, 150, 238, 0.10);
 }
 
 .create-btn {
   width: 100%;
-  padding: 12px 16px;
-  font-size: 13px;
+  padding: 14px 0;
+  font-size: 15px;
   font-weight: 700;
-  letter-spacing: 1.5px;
+  letter-spacing: 1.2px;
+  border-radius: 10px;
+  border: none;
   margin-top: 0 !important;
+  background: linear-gradient(90deg, #0aabff 0%, #0896ee 100%);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(8, 150, 238, 0.10);
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s, transform 0.2s;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.create-btn:hover {
+  background: linear-gradient(90deg, #0896ee 0%, #0aabff 100%);
+  color: #fff;
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 8px 24px rgba(8, 150, 238, 0.18);
 }
 
 .coach-btn {
   width: 100%;
-  padding: 12px 16px;
-  font-size: 12px;
+  padding: 14px 0;
+  font-size: 15px;
   font-weight: 700;
   letter-spacing: 1.2px;
+  border-radius: 10px;
+  border: none;
   margin-top: 0 !important;
-  background: rgba(255, 255, 255, 0.06);
-  color: #d6e1ec;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: linear-gradient(90deg, #ffb347 0%, #ffcc33 100%);
+  color: #1a2332;
+  box-shadow: 0 2px 8px rgba(255, 204, 51, 0.10);
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s, transform 0.2s;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.coach-btn:hover {
+  background: linear-gradient(90deg, #ffcc33 0%, #ffb347 100%);
+  color: #1a2332;
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 8px 24px rgba(255, 204, 51, 0.18);
 }
 
 .dashboard-main {
