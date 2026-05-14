@@ -22,7 +22,6 @@ const QUICK_PROMPTS = [
   'Make me a short study plan for tonight.',
 ];
 
-
 function DashboardPage({ user, onLogout }) {
   const [assignments, setAssignments] = useState([]);
   const [showModal, setShowModal] = useState(false);
@@ -33,23 +32,9 @@ function DashboardPage({ user, onLogout }) {
   const [assistantLoading, setAssistantLoading] = useState(false);
   const [chatOpen, setChatOpen] = useState(true);
   const [googleClassroomRefresh, setGoogleClassroomRefresh] = useState(0);
-  const [darkMode, setDarkMode] = useState(() => {
-    // Persist theme in localStorage
-    return localStorage.getItem('theme') === 'dark';
-  });
   const navigate = useNavigate();
   const assistantScrollRef = useRef(null);
   const token = localStorage.getItem('token');
-
-  useEffect(() => {
-    if (darkMode) {
-      document.body.classList.add('dark-theme');
-      localStorage.setItem('theme', 'dark');
-    } else {
-      document.body.classList.remove('dark-theme');
-      localStorage.setItem('theme', 'light');
-    }
-  }, [darkMode]);
 
   const fetchAssignments = async () => {
     try {
@@ -147,13 +132,6 @@ function DashboardPage({ user, onLogout }) {
       <header className="dashboard-header">
         <div className="header-content">
           <h1>Welcome, {user?.username || 'Student'}</h1>
-          <button
-            className="theme-toggle-btn"
-            onClick={() => setDarkMode((prev) => !prev)}
-            aria-label="Toggle light/dark mode"
-          >
-            {darkMode ? '🌙 Dark' : '☀️ Light'}
-          </button>
           <button onClick={handleLogout} className="btn-secondary">
             Logout
           </button>
